@@ -109,4 +109,8 @@ public class Calabash extends Sprite {
             this.speed += 5;
         }
     }
+
+    public int getSpeed() {
+        return this.speed;
+    }
 }

@@ -6,6 +6,7 @@ import com.nju.edu.screen.GameScreen;
 import com.nju.edu.sprite.*;
 import com.nju.edu.util.GameState;
 import com.nju.edu.util.ReadImage;
+import com.nju.edu.util.TimeControl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +35,7 @@ public class GameController extends JPanel implements Runnable {
     /**
      * 游戏的状态
      */
-    public static GameState STATE = GameState.START;
+    public static GameState STATE = GameState.RUNNING;
     /**
      * 用一个线程池来管理妖精的出现
      */
@@ -71,7 +72,9 @@ public class GameController extends JPanel implements Runnable {
         resetBoard();
 
         executor.execute(calabashThread);
+        executor.execute(new GrandfatherThread());
         executor.execute(new MonsterThread());
+        executor.execute(new TimeControl());
         executor.execute(this);
 
         executor.shutdown();
@@ -82,13 +85,6 @@ public class GameController extends JPanel implements Runnable {
         while (!isExited) {
             monsterCollision();
             calabashCollision();
-
-            addTime();
-            try {
-                TimeUnit.MILLISECONDS.sleep(40);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             repaint();
         }
     }
@@ -211,14 +207,6 @@ public class GameController extends JPanel implements Runnable {
             while (!isExited) {
                 moving();
                 calabashBulletMove(TIME);
-
-                addTime();
-                try {
-                    TimeUnit.MILLISECONDS.sleep(40);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
                 repaint();
             }
         }
@@ -316,14 +304,6 @@ public class GameController extends JPanel implements Runnable {
                 monsterBulletMove(TIME);
                 monsterAppear(TIME);
                 monsterFire(TIME);
-
-                addTime();
-                try {
-                    TimeUnit.MILLISECONDS.sleep(40);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
                 repaint();
             }
         }
@@ -465,7 +445,8 @@ public class GameController extends JPanel implements Runnable {
         scoreLabel.setForeground(Color.RED);
         HPLabel = new JLabel("HP: " + calabash.getHP());
         HPLabel.setForeground(Color.RED);
-        skillLabel = new JLabel("Skill: " + calabash.getCurSkill().getName());
+        skillLabel = new JLabel("Skill: null");
+        skillLabel.setForeground(Color.RED);
 
         // 游戏继续按钮
         final JButton goOnButton = new JButton("继续");
@@ -500,14 +481,15 @@ public class GameController extends JPanel implements Runnable {
         labelPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 30, 10));
         labelPanel.add(scoreLabel);
         labelPanel.add(HPLabel);
+        labelPanel.add(skillLabel);
         labelPanel.add(goOnButton);
         labelPanel.add(stopButton);
         // JPanel 面板添加这个面板
         this.add(labelPanel);
     }
 
-    private void addTime() {
-        TIME += 20;
+    public static void addTime() {
+        TIME += 40;
     }
 
     /**
@@ -524,7 +506,9 @@ public class GameController extends JPanel implements Runnable {
     @Override
     public void paint(Graphics g) {
         // TODO: 绘制所有物体
+        // TODO: 双缓冲
         super.paint(g);
+
         // 如果为初始状态
         if (STATE == GameState.START) {
             paintStart(g);
