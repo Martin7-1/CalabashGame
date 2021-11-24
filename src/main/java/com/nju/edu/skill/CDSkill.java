@@ -18,5 +18,10 @@ public class CDSkill implements Skill{
         this.haveSkill = true;
     }
 
+    @Override
+    public void start() {
+        // TODO
+    }
+
 
 }

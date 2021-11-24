@@ -10,9 +10,15 @@ import com.nju.edu.util.ReadImage;
  */
 public class Calabash extends Sprite {
 
+    private static final Calabash CALABASH = new Calabash(0, 320);
+
+    public static Calabash getInstance() {
+        return CALABASH;
+    }
+
     public Skill skill;
 
-    public Calabash(int x, int y) {
+    private Calabash(int x, int y) {
         super(x, y, 100, 100, ReadImage.Calabash);
         this.speed = 10;
     }
@@ -74,5 +80,9 @@ public class Calabash extends Sprite {
 
     public void resetHP() {
         this.HP = 100;
+    }
+
+    public void useSkill() {
+        this.skill.start();
     }
 }

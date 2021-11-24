@@ -15,4 +15,9 @@ public interface Skill {
      * 获得该技能
      */
     void haveSkill();
+
+    /**
+     * 使用技能
+     */
+    void start();
 }

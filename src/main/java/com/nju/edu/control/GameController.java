@@ -418,7 +418,7 @@ public class GameController extends JPanel implements Runnable {
         this.addKeyListener(calabashThread);
 
         // 葫芦娃的初始位置
-        calabash = new Calabash(0, 320);
+        calabash = Calabash.getInstance();
 
         // 初始化一些Label
         scoreLabel = new JLabel("Score: " + this.score);

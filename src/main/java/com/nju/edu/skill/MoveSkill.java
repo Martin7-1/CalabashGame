@@ -17,4 +17,9 @@ public class MoveSkill implements Skill {
     public void haveSkill() {
         this.haveSkill = true;
     }
+
+    @Override
+    public void start() {
+        // TODO
+    }
 }

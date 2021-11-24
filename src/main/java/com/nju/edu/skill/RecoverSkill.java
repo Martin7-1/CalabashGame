@@ -17,4 +17,9 @@ public class RecoverSkill implements Skill {
     public void haveSkill() {
         this.haveSkill = true;
     }
+
+    @Override
+    public void start() {
+        // TODO
+    }
 }
