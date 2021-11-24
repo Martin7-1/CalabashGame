@@ -48,6 +48,7 @@ public class GameController extends JPanel implements Runnable {
     private JLabel skillLabel;
 
     private Calabash calabash;
+    private GrandFather grandFather;
     private List<MonsterOne> monsterOneList;
     private List<MonsterTwo> monsterTwoList;
     private List<MonsterThree> monsterThreeList;
@@ -228,18 +229,22 @@ public class GameController extends JPanel implements Runnable {
                 // 向上走y值减小
                 // 判断会不会走出边界
                 calabash.moveUp();
+                grandFather.moveUp();
             } else if (getKeyDown(KeyEvent.VK_S) || getKeyDown(KeyEvent.VK_DOWN)) {
                 // 向下走y值增大
                 // 判断会不会走出边界
                 calabash.moveDown();
+                grandFather.moveDown();
             } else if (getKeyDown(KeyEvent.VK_A) || getKeyDown(KeyEvent.VK_LEFT)) {
                 // 向左走x值减小
                 // 判断会不会走出边界
                 calabash.moveLeft();
+                grandFather.moveLeft();
             } else if (getKeyDown(KeyEvent.VK_D) || getKeyDown(KeyEvent.VK_RIGHT)) {
                 // 向右走x值增大
                 // 判断会不会走出边界
                 calabash.moveRight();
+                grandFather.moveRight();
             } else if (getKeyDown(KeyEvent.VK_J)) {
                 // 按j发射子弹
                 CalabashBullet bullet = calabash.calabashFire();
@@ -426,7 +431,7 @@ public class GameController extends JPanel implements Runnable {
          * 自动跟随葫芦娃移动
          */
         private void autoMove() {
-            
+
         }
     }
 
@@ -453,6 +458,7 @@ public class GameController extends JPanel implements Runnable {
 
         // 葫芦娃的初始位置
         calabash = Calabash.getInstance();
+        grandFather = GrandFather.getInstance();
 
         // 初始化一些Label
         scoreLabel = new JLabel("Score: " + this.score);
@@ -527,6 +533,8 @@ public class GameController extends JPanel implements Runnable {
             paintCalabash(g);
             // 绘制妖精
             paintMonster(g);
+            // 绘制爷爷
+            paintGrandfather(g);
             // 绘制一组妖精子弹
             paintMonsterBullets(g);
             // 绘制葫芦娃的子弹
@@ -558,6 +566,10 @@ public class GameController extends JPanel implements Runnable {
 
     private void paintCalabash(Graphics g) {
         g.drawImage(ReadImage.Calabash, calabash.getX(), calabash.getY(), 100, 100, null);
+    }
+
+    private void paintGrandfather(Graphics g) {
+        g.drawImage(ReadImage.GrandFather, grandFather.getX(), grandFather.getY(), 100, 100, null);
     }
 
     private void paintMonster(Graphics g) {
