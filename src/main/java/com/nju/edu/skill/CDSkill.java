@@ -9,6 +9,7 @@ public class CDSkill implements Skill{
     private boolean haveSkill = false;
     private final String skillName = "CDSkill";
 
+
     @Override
     public boolean isHaveSkill() {
         return haveSkill;

@@ -78,6 +78,10 @@ public class Calabash extends Sprite {
         this.HP -= damage;
     }
 
+    public void recover() {
+        this.HP += 10;
+    }
+
     public void resetHP() {
         this.HP = 100;
     }
@@ -97,5 +101,12 @@ public class Calabash extends Sprite {
     public Skill getCurSkill() {
         // 获得当前拥有的技能
         return this.skill;
+    }
+
+    public void speedUp(boolean haveSkill) {
+        if (haveSkill) {
+            // 加速
+            this.speed += 5;
+        }
     }
 }
