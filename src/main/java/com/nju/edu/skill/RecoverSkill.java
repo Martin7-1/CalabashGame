@@ -27,7 +27,8 @@ public class RecoverSkill implements Skill {
         this.calabash.recover();
     }
 
-    public String getSkillName() {
+    @Override
+    public String getName() {
         return this.skillName;
     }
 }

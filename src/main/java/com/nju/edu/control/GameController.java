@@ -465,6 +465,7 @@ public class GameController extends JPanel implements Runnable {
         scoreLabel.setForeground(Color.RED);
         HPLabel = new JLabel("HP: " + calabash.getHP());
         HPLabel.setForeground(Color.RED);
+        skillLabel = new JLabel("Skill: " + calabash.getCurSkill().getName());
 
         // 游戏继续按钮
         final JButton goOnButton = new JButton("继续");

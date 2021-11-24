@@ -28,7 +28,8 @@ public class MoveSkill implements Skill {
         this.calabash.speedUp(true);
     }
 
-    public String getSkillName() {
+    @Override
+    public String getName() {
         return this.skillName;
     }
 }

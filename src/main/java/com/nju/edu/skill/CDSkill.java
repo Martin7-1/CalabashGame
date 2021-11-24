@@ -25,7 +25,8 @@ public class CDSkill implements Skill{
         // TODO
     }
 
-    public String getSkillName() {
+    @Override
+    public String getName() {
         return this.skillName;
     }
 }
