@@ -85,6 +85,12 @@ public class GameController extends JPanel implements Runnable {
         while (!isExited) {
             monsterCollision();
             calabashCollision();
+
+            try {
+                TimeUnit.MILLISECONDS.sleep(40);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             repaint();
         }
     }
@@ -207,6 +213,12 @@ public class GameController extends JPanel implements Runnable {
             while (!isExited) {
                 moving();
                 calabashBulletMove(TIME);
+
+                try {
+                    TimeUnit.MILLISECONDS.sleep(40);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 repaint();
             }
         }
@@ -304,6 +316,12 @@ public class GameController extends JPanel implements Runnable {
                 monsterBulletMove(TIME);
                 monsterAppear(TIME);
                 monsterFire(TIME);
+
+                try {
+                    TimeUnit.MILLISECONDS.sleep(40);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 repaint();
             }
         }
@@ -489,7 +507,7 @@ public class GameController extends JPanel implements Runnable {
     }
 
     public static void addTime() {
-        TIME += 40;
+        TIME += 20;
     }
 
     /**
