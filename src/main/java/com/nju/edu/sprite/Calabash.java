@@ -85,4 +85,9 @@ public class Calabash extends Sprite {
     public void useSkill() {
         this.skill.start();
     }
+
+    public Skill getCurSkill() {
+        // 获得当前拥有的技能
+        return this.skill;
+    }
 }

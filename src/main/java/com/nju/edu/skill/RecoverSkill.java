@@ -7,6 +7,7 @@ package com.nju.edu.skill;
 public class RecoverSkill implements Skill {
 
     private boolean haveSkill = false;
+    private final String skillName = "RecoverSkill";
 
     @Override
     public boolean isHaveSkill() {
@@ -21,5 +22,9 @@ public class RecoverSkill implements Skill {
     @Override
     public void start() {
         // TODO
+    }
+
+    public String getSkillName() {
+        return this.skillName;
     }
 }
