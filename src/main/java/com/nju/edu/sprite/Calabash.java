@@ -79,7 +79,11 @@ public class Calabash extends Sprite {
     }
 
     public void recover() {
-        this.HP += 10;
+        if (this.HP + 10 > 100) {
+            this.HP = 100;
+        } else {
+            this.HP += 10;
+        }
     }
 
     public void resetHP() {
@@ -121,5 +125,9 @@ public class Calabash extends Sprite {
 
     public int getSpeed() {
         return this.speed;
+    }
+
+    public void clearSkillImpact() {
+        this.speed += 5;
     }
 }

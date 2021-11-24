@@ -200,7 +200,8 @@ public class GameController extends JPanel implements Runnable {
         /**
          * 记录存放的按键数量
          */
-        public final static int KEY_COUNTS = 1000;
+        private final static int KEY_COUNTS = 1000;
+        private static final int FIRE_INTERVAL = 80;
 
         public CalabashThread() {
             System.out.println("[CalabashThead]created");
@@ -248,7 +249,7 @@ public class GameController extends JPanel implements Runnable {
             } else if (getKeyDown(KeyEvent.VK_J)) {
                 // 按j发射子弹
                 CalabashBullet bullet = calabash.calabashFire();
-                if (TIME % 80 == 0) {
+                if (TIME % FIRE_INTERVAL == 0) {
                     calabashBulletList.add(bullet);
                 }
             } else if (getKeyDown(KeyEvent.VK_ENTER)) {
@@ -430,6 +431,8 @@ public class GameController extends JPanel implements Runnable {
             while (!isExited) {
                 // 根据时间的间隔给予葫芦娃技能
                 if (TIME % GIVE_SKILL_INTERVAL == 0) {
+                    // 清空moveSkill和cdSkill的效果
+                    calabash.clearSkillImpact();
                     grandFather.giveSkill();
                     skillLabel.setText(calabash.getCurSkill().getName());
                     calabash.setFirstUse();

@@ -1,6 +1,7 @@
 package com.nju.edu.skill;
 
 import com.nju.edu.sprite.Calabash;
+import com.nju.edu.sprite.GrandFather;
 
 /**
  * 加快葫芦娃的移动能力
@@ -11,6 +12,7 @@ public class MoveSkill implements Skill {
     private boolean haveSkill = false;
     private final String skillName = "MoveSkill";
     private Calabash calabash = Calabash.getInstance();
+    private GrandFather grandFather = GrandFather.getInstance();
 
     @Override
     public boolean isHaveSkill() {
@@ -26,6 +28,7 @@ public class MoveSkill implements Skill {
     public void start() {
         // 加快移动速度
         this.calabash.speedUp(true);
+        this.grandFather.speedUp(true);
     }
 
     @Override

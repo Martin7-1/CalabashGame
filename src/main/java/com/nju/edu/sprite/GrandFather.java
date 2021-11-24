@@ -71,4 +71,13 @@ public class GrandFather extends Sprite {
         this.giveTime++;
     }
 
+    public void speedUp(boolean isSpeedUp) {
+        if (isSpeedUp) {
+            this.speed += 5;
+        }
+    }
+
+    public void clearSkillImpact() {
+
+    }
 }
