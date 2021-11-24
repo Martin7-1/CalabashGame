@@ -128,6 +128,6 @@ public class Calabash extends Sprite {
     }
 
     public void clearSkillImpact() {
-        this.speed += 5;
+        // this.speed = 5;
     }
 }

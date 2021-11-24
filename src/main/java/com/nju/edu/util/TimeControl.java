@@ -1,7 +1,6 @@
 package com.nju.edu.util;
 
 import com.nju.edu.control.GameController;
-import com.nju.edu.screen.GameScreen;
 
 import java.util.concurrent.TimeUnit;
 
