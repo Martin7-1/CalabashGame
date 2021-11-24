@@ -12,7 +12,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -509,7 +508,6 @@ public class GameController extends JPanel implements Runnable {
 
     public void paintStart(Graphics g) {
         g.drawImage(ReadImage.startBackground, 0, 0, 1080, 680, null);
-        // g.drawImage(ReadImage.Title, 420, 340, null);
         Font font = new Font("黑体", Font.PLAIN, 20);
         g.setColor(Color.WHITE);
         g.setFont(font);
@@ -520,7 +518,8 @@ public class GameController extends JPanel implements Runnable {
     }
 
     public void paintOver(Graphics g) {
-
+        // 绘制结束界面
+        // TODO
     }
 
     private void paintCalabash(Graphics g) {
@@ -551,53 +550,5 @@ public class GameController extends JPanel implements Runnable {
         for (MonsterBullet bullet : this.monsterBulletList) {
             bullet.draw(g);
         }
-    }
-
-    public void setMonsterOneList(MonsterOne monster) {
-        this.monsterOneList.add(monster);
-    }
-
-    public void setMonsterTwoList(MonsterTwo monster) {
-        this.monsterTwoList.add(monster);
-    }
-
-    public void setMonsterThreeList(MonsterThree monster) {
-        this.monsterThreeList.add(monster);
-    }
-
-    public void setMonsterBulletList(MonsterBullet monsterBullet) {
-        this.monsterBulletList.add(monsterBullet);
-    }
-
-    public void setCalabashBulletList(CalabashBullet calabashBullet) {
-        this.calabashBulletList.add(calabashBullet);
-    }
-
-    public List<MonsterOne> getMonsterOneList() {
-        return this.monsterOneList;
-    }
-
-    public List<MonsterTwo> getMonsterTwoList() {
-        return this.monsterTwoList;
-    }
-
-    public List<MonsterThree> getMonsterThreeList() {
-        return this.monsterThreeList;
-    }
-
-    public List<MonsterBullet> getMonsterBulletList() {
-        return this.monsterBulletList;
-    }
-
-    public List<CalabashBullet> getCalabashBulletList() {
-        return this.calabashBulletList;
-    }
-
-    public static Long getTime() {
-        return TIME;
-    }
-
-    public static GameState getState() {
-        return STATE;
     }
 }
