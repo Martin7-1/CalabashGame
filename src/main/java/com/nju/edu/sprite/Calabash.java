@@ -22,6 +22,7 @@ public class Calabash extends Sprite {
      * 葫芦娃的血量
      */
     public int HP = 100;
+    private int fireInterval = 100;
 
     private Calabash(int x, int y) {
         super(x, y, 100, 100, ReadImage.Calabash);
@@ -123,11 +124,32 @@ public class Calabash extends Sprite {
         }
     }
 
+    private void speedDown() {
+        this.speed -= 5;
+    }
+
     public int getSpeed() {
         return this.speed;
     }
 
     public void clearSkillImpact() {
-        // this.speed = 5;
+        // 根据当前技能来清空技能效果
+        if (this.skill != null) {
+            if ("MoveSkill".equals(this.skill.getName())) {
+                speedDown();
+            } else if ("CDSkill".equals(this.skill.getName())) {
+                this.fireInterval = 160;
+            } else {
+                // nothing to do, recover do not need to reset
+            }
+        }
+    }
+
+    public int getFireInterval() {
+        return this.fireInterval;
+    }
+
+    public void setFireInterval(int fireInterval) {
+        this.fireInterval = fireInterval;
     }
 }

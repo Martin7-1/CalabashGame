@@ -62,10 +62,13 @@ public class GrandFather extends Sprite {
     public void giveSkill() {
         // 循环给予
         if (giveTime % Skill.SKILL_AMOUNT == 0) {
+            System.out.println("give move skill");
             this.calabash.setSkill(new MoveSkill());
         } else if (giveTime % Skill.SKILL_AMOUNT == 1) {
+            System.out.println("give cd skill");
             this.calabash.setSkill(new CDSkill());
         } else if (giveTime % Skill.SKILL_AMOUNT == 2) {
+            System.out.println("give recover skill");
             this.calabash.setSkill(new RecoverSkill());
         }
         this.giveTime++;
@@ -78,6 +81,10 @@ public class GrandFather extends Sprite {
     }
 
     public void clearSkillImpact() {
-
+        if (calabash.haveSkill()) {
+            if ("MoveSkill".equals(calabash.getCurSkill().getName())) {
+                this.speed -= 5;
+            }
+        }
     }
 }

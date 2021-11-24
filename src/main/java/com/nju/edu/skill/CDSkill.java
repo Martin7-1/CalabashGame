@@ -1,5 +1,7 @@
 package com.nju.edu.skill;
 
+import com.nju.edu.sprite.Calabash;
+
 /**
  * 发射子弹间隔时间为0的技能
  * @author Zyi
@@ -8,7 +10,7 @@ public class CDSkill implements Skill{
 
     private boolean haveSkill = false;
     private final String skillName = "CDSkill";
-
+    private Calabash calabash = Calabash.getInstance();
 
     @Override
     public boolean isHaveSkill() {
@@ -22,7 +24,7 @@ public class CDSkill implements Skill{
 
     @Override
     public void start() {
-        // TODO
+        calabash.setFireInterval(80);
     }
 
     @Override
