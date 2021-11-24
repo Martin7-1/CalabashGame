@@ -300,6 +300,7 @@ public class GameController extends JPanel implements Runnable {
         private Thread thread = Thread.currentThread();
 
         public MonsterThread() {
+            // test
             System.out.println("[MonsterThread]created");
         }
 
@@ -402,6 +403,30 @@ public class GameController extends JPanel implements Runnable {
                 MonsterThree monsterThree = new MonsterThree(GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
                 monsterThreeList.add(monsterThree);
             }
+        }
+    }
+
+    private class GrandfatherThread implements Runnable {
+        private Thread thread = Thread.currentThread();
+
+        public GrandfatherThread() {
+            // test
+            System.out.println("[GrandfatherThread]created");
+        }
+
+        @Override
+        public void run() {
+            while (!isExited) {
+                // auto move
+                autoMove();
+            }
+        }
+
+        /**
+         * 自动跟随葫芦娃移动
+         */
+        private void autoMove() {
+            
         }
     }
 
