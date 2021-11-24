@@ -260,8 +260,14 @@ public class GameController extends JPanel implements Runnable {
                 }
             } else if (getKeyDown(KeyEvent.VK_X)) {
                 // 按x使用技能
-                if (calabash.haveSkill()) {
+                if (calabash.haveSkill() && calabash.isFirstUse()) {
                     calabash.useSkill();
+                    // 只能够使用一次技能
+                    calabash.setFirstUse();
+                    if ("RecoverSkill".equals(calabash.getCurSkill().getName())) {
+                        // 更改血量的显示
+                        HPLabel.setText("HP: " + calabash.getHP());
+                    }
                 }
             }
         }
@@ -412,6 +418,8 @@ public class GameController extends JPanel implements Runnable {
     private class GrandfatherThread implements Runnable {
         private Thread thread = Thread.currentThread();
 
+        private static final int GIVE_SKILL_INTERVAL = 4000;
+
         public GrandfatherThread() {
             // test
             System.out.println("[GrandfatherThread]created");
@@ -420,8 +428,18 @@ public class GameController extends JPanel implements Runnable {
         @Override
         public void run() {
             while (!isExited) {
-                // auto move
-                autoMove();
+                // 根据时间的间隔给予葫芦娃技能
+                if (TIME % GIVE_SKILL_INTERVAL == 0) {
+                    grandFather.giveSkill();
+                    skillLabel.setText(calabash.getCurSkill().getName());
+                    calabash.setFirstUse();
+                }
+
+                try {
+                    TimeUnit.MILLISECONDS.sleep(40);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
