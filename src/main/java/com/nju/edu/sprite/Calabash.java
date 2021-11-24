@@ -2,12 +2,15 @@ package com.nju.edu.sprite;
 
 import com.nju.edu.bullet.CalabashBullet;
 import com.nju.edu.screen.GameScreen;
+import com.nju.edu.skill.Skill;
 import com.nju.edu.util.ReadImage;
 
 /**
  * @author Zyi
  */
 public class Calabash extends Sprite {
+
+    public Skill skill;
 
     public Calabash(int x, int y) {
         super(x, y, 100, 100, ReadImage.Calabash);
