@@ -356,12 +356,12 @@ public class GameController extends JPanel implements Runnable {
             }
         }
 
-        private static final int FIRE_INTERVAL_ONE = 2000;
-        private static final int FIRE_INTERVAL_TWO = 4000;
-        private static final int FIRE_INTERVAL_THREE = 6000;
-        private static final int MONSTER_ONE_APPEAR = 4000;
-        private static final int MONSTER_TWO_APPEAR = 6000;
-        private static final int MONSTER_THREE_APPEAR = 8000;
+        private static final int FIRE_INTERVAL_ONE = 1000;
+        private static final int FIRE_INTERVAL_TWO = 2000;
+        private static final int FIRE_INTERVAL_THREE = 3000;
+        private static final int MONSTER_ONE_APPEAR = 2000;
+        private static final int MONSTER_TWO_APPEAR = 4000;
+        private static final int MONSTER_THREE_APPEAR = 4000;
 
         /**
          * 妖精发射子弹的时间
@@ -446,13 +446,6 @@ public class GameController extends JPanel implements Runnable {
                     throw new RuntimeException(e);
                 }
             }
-        }
-
-        /**
-         * 自动跟随葫芦娃移动
-         */
-        private void autoMove() {
-
         }
     }
 
