@@ -15,6 +15,7 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -61,11 +62,11 @@ public class GameController extends JPanel implements Runnable {
     private CalabashThread calabashThread = new CalabashThread();
 
     public GameController() {
-        this.monsterOneList = new ArrayList<>();
-        this.monsterTwoList = new ArrayList<>();
-        this.monsterThreeList = new ArrayList<>();
-        this.monsterBulletList = new ArrayList<>();
-        this.calabashBulletList = new ArrayList<>();
+        this.monsterOneList = new CopyOnWriteArrayList<>();
+        this.monsterTwoList = new CopyOnWriteArrayList<>();
+        this.monsterThreeList = new CopyOnWriteArrayList<>();
+        this.monsterBulletList = new CopyOnWriteArrayList<>();
+        this.calabashBulletList = new CopyOnWriteArrayList<>();
 
         this.addKeyListener(calabashThread);
         this.requestFocus();
@@ -436,7 +437,7 @@ public class GameController extends JPanel implements Runnable {
                     calabash.clearSkillImpact();
                     grandFather.clearSkillImpact();
                     grandFather.giveSkill();
-                    skillLabel.setText(calabash.getCurSkill().getName());
+                    skillLabel.setText("curSkill: " + calabash.getCurSkill().getName());
                     calabash.setFirstUse();
                 }
 
@@ -479,7 +480,7 @@ public class GameController extends JPanel implements Runnable {
         scoreLabel.setForeground(Color.RED);
         HPLabel = new JLabel("HP: " + calabash.getHP());
         HPLabel.setForeground(Color.RED);
-        skillLabel = new JLabel("Skill: null");
+        skillLabel = new JLabel("curSkill: null");
         skillLabel.setForeground(Color.RED);
 
         // 游戏继续按钮
@@ -572,11 +573,11 @@ public class GameController extends JPanel implements Runnable {
         Font font = new Font("黑体", Font.PLAIN, 20);
         g.setColor(Color.WHITE);
         g.setFont(font);
-        g.drawString("按ENTER键开始游戏", 50, 500);
-        g.drawString("J:发射子弹", 50, 550);
-        g.drawString("X:使用技能", 50, 600);
-        g.drawString("方向键:↑,↓,←,→", 50, 650);
-        g.drawString("作者:Martin", 50, 700);
+        g.drawString("按ENTER键开始游戏", 50, 450);
+        g.drawString("J:发射子弹", 50, 500);
+        g.drawString("X:使用技能", 50, 550);
+        g.drawString("方向键:↑,↓,←,→", 50, 600);
+        g.drawString("作者:Martin", 50, 650);
     }
 
     public void paintOver(Graphics g) {
