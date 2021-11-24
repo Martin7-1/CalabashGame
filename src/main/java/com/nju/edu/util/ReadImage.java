@@ -15,6 +15,7 @@ public class ReadImage {
     public static BufferedImage MonsterThree;
 
     public static BufferedImage Calabash;
+    public static BufferedImage GrandFather;
 
     public static BufferedImage MonsterBullet;
     public static BufferedImage CalabashBullet;
@@ -28,6 +29,7 @@ public class ReadImage {
             MonsterTwo = ImageIO.read(new FileInputStream("D:\\Java\\Programs\\JavaAdvancedProgramming\\CalabashGame\\image\\monster2.png"));
             MonsterThree = ImageIO.read(new FileInputStream("D:\\Java\\Programs\\JavaAdvancedProgramming\\CalabashGame\\image\\monster3.png"));
             Calabash = ImageIO.read(new FileInputStream("D:\\Java\\Programs\\JavaAdvancedProgramming\\CalabashGame\\image\\calabash.png"));
+            GrandFather = ImageIO.read(new FileInputStream("D:\\Java\\Programs\\JavaAdvancedProgramming\\CalabashGame\\image\\grandfather.png"));
             MonsterBullet = ImageIO.read(new FileInputStream("D:\\Java\\Programs\\JavaAdvancedProgramming\\CalabashGame\\image\\monsterBullet.png"));
             CalabashBullet = ImageIO.read(new FileInputStream("D:\\Java\\Programs\\JavaAdvancedProgramming\\CalabashGame\\image\\calabashBullet.png"));
             // TODO: find a background image
