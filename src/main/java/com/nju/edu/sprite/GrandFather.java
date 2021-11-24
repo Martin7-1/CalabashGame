@@ -1,6 +1,10 @@
 package com.nju.edu.sprite;
 
 import com.nju.edu.screen.GameScreen;
+import com.nju.edu.skill.CDSkill;
+import com.nju.edu.skill.MoveSkill;
+import com.nju.edu.skill.RecoverSkill;
+import com.nju.edu.skill.Skill;
 import com.nju.edu.util.ReadImage;
 
 import java.awt.image.BufferedImage;
@@ -11,7 +15,13 @@ import java.awt.image.BufferedImage;
  */
 public class GrandFather extends Sprite {
 
-    public GrandFather(int x, int y) {
+    private static final GrandFather GRAND_FATHER = new GrandFather(0, 320);
+
+    public static GrandFather getInstance() {
+        return GRAND_FATHER;
+    }
+
+    private GrandFather(int x, int y) {
         super(x, y, 100, 100, ReadImage.GrandFather);
     }
 
@@ -40,10 +50,24 @@ public class GrandFather extends Sprite {
     }
 
     /**
+     * 给予技能的次数
+     */
+    private int giveTime = 0;
+    private Calabash calabash = Calabash.getInstance();
+
+    /**
      * 给予葫芦娃一个技能
      */
     public void giveSkill() {
-
+        // 循环给予
+        if (giveTime % Skill.SKILL_AMOUNT == 0) {
+            this.calabash.setSkill(new MoveSkill());
+        } else if (giveTime % Skill.SKILL_AMOUNT == 1) {
+            this.calabash.setSkill(new CDSkill());
+        } else if (giveTime % Skill.SKILL_AMOUNT == 2) {
+            this.calabash.setSkill(new RecoverSkill());
+        }
+        this.giveTime++;
     }
 
 }

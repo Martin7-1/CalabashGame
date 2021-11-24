@@ -5,6 +5,8 @@ package com.nju.edu.skill;
  */
 public interface Skill {
 
+    int SKILL_AMOUNT = 3;
+
     /**
      * 判断当前是否拥有该技能
      * @return true if the calabash have the skill, false otherwise
