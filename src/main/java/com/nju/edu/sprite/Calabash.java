@@ -82,6 +82,10 @@ public class Calabash extends Sprite {
         this.HP = 100;
     }
 
+    public boolean haveSkill() {
+        return this.skill == null;
+    }
+
     public void useSkill() {
         this.skill.start();
     }

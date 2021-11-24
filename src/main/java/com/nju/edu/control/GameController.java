@@ -255,7 +255,9 @@ public class GameController extends JPanel implements Runnable {
                 }
             } else if (getKeyDown(KeyEvent.VK_X)) {
                 // 按x使用技能
-                calabash.useSkill();
+                if (calabash.haveSkill()) {
+                    calabash.useSkill();
+                }
             }
         }
 
