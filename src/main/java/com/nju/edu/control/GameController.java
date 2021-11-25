@@ -56,7 +56,8 @@ public class GameController extends JPanel implements Runnable {
     private List<MonsterThree> monsterThreeList;
     private List<MonsterBullet> monsterBulletList;
     private List<CalabashBullet> calabashBulletList;
-    // TODO: boom
+    // TODO
+    private List<Blast> blastList;
 
     private boolean isExited = false;
     private CalabashThread calabashThread = new CalabashThread();
