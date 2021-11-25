@@ -10,7 +10,7 @@ public class MonsterOne extends Sprite implements Monster {
 
     public MonsterOne(int x, int y) {
         super(x, y, 100, 100, ReadImage.MonsterOne);
-        this.speed = 4;
+        this.speed = 6;
     }
 
     public MonsterOne(int x, int y, int speed) {

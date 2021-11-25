@@ -1,6 +1,7 @@
 package com.nju.edu.util;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,6 +24,8 @@ public class ReadImage {
     public static BufferedImage startBackground;
     public static BufferedImage runningBackground;
 
+    public static BufferedImage blast;
+
     static {
         try {
             MonsterOne = ImageIO.read(new FileInputStream("D:\\Java\\Programs\\JavaAdvancedProgramming\\CalabashGame\\image\\monster1.png"));
@@ -35,6 +38,7 @@ public class ReadImage {
             // TODO: find a background image
             startBackground = ImageIO.read(new FileInputStream("D:\\Java\\Programs\\JavaAdvancedProgramming\\CalabashGame\\image\\startBg.png"));
             runningBackground = ImageIO.read(new FileInputStream("D:\\Java\\Programs\\JavaAdvancedProgramming\\CalabashGame\\image\\runningBg.png"));
+            blast = ImageIO.read(new FileInputStream("D:\\Java\\Programs\\JavaAdvancedProgramming\\CalabashGame\\image\\blast.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }

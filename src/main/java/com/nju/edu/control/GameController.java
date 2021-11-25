@@ -290,7 +290,7 @@ public class GameController extends JPanel implements Runnable {
 
         @Override
         public void keyTyped(KeyEvent e) {
-
+            // nothing to do
         }
 
         @Override

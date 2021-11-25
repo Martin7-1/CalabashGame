@@ -13,7 +13,7 @@ public class MonsterBullet extends Sprite {
 
     public MonsterBullet(int x, int y) {
         super(x, y, 26, 26, ReadImage.MonsterBullet);
-        this.speed = 5;
+        this.speed = 8;
     }
 
     @Override

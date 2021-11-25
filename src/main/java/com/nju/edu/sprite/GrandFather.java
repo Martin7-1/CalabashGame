@@ -82,7 +82,7 @@ public class GrandFather extends Sprite {
 
     public void clearSkillImpact() {
         if (calabash.haveSkill()) {
-            if ("MoveSkill".equals(calabash.getCurSkill().getName())) {
+            if ("MoveSkill".equals(calabash.getCurSkill().getName()) && this.speed == 15) {
                 this.speed -= 5;
             }
         }

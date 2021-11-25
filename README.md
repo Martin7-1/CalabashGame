@@ -1,6 +1,6 @@
 # README
 
-本游戏主要通过`Swing`和`awt`来实现一个“葫芦娃大战妖精”的2D横版射击游戏，借鉴游戏有：崩坏学园2、飞机大战等
+本游戏主要通过`Swing`和`awt`来实现一个“葫芦娃大战妖精”的2D横版射击游戏，借鉴游戏有：崩坏学园2、飞机大战等。https://github.com/Martin7-1/CalabashGame
 
 
 
