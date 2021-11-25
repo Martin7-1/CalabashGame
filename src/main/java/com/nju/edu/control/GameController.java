@@ -63,11 +63,14 @@ public class GameController extends JPanel implements Runnable {
     private CalabashThread calabashThread = new CalabashThread();
 
     public GameController() {
+        // 并发容器的使用
+        // 线程安全的arrayList
         this.monsterOneList = new CopyOnWriteArrayList<>();
         this.monsterTwoList = new CopyOnWriteArrayList<>();
         this.monsterThreeList = new CopyOnWriteArrayList<>();
         this.monsterBulletList = new CopyOnWriteArrayList<>();
         this.calabashBulletList = new CopyOnWriteArrayList<>();
+        this.blastList = new CopyOnWriteArrayList<>();
 
         this.addKeyListener(calabashThread);
         this.requestFocus();
@@ -110,6 +113,8 @@ public class GameController extends JPanel implements Runnable {
             for (int j = 0; j < calabashBulletLength; j++) {
                 CalabashBullet bullet = calabashBulletList.get(j);
                 if (GameObject.isCollide(monsterOne, bullet)) {
+                    Blast blast = new Blast(bullet.getX(), bullet.getY());
+                    blastList.add(blast);
                     calabashBulletList.remove(bullet);
                     monsterOneList.remove(monsterOne);
 
@@ -133,6 +138,8 @@ public class GameController extends JPanel implements Runnable {
             for (int j = 0; j < calabashBulletLength; j++) {
                 CalabashBullet bullet = calabashBulletList.get(j);
                 if (GameObject.isCollide(monsterTwo, bullet)) {
+                    Blast blast = new Blast(bullet.getX(), bullet.getY());
+                    blastList.add(blast);
                     calabashBulletList.remove(bullet);
                     monsterTwoList.remove(monsterTwo);
 
@@ -154,6 +161,8 @@ public class GameController extends JPanel implements Runnable {
             for (int j = 0; j < calabashBulletLength; j++) {
                 CalabashBullet bullet = calabashBulletList.get(j);
                 if (GameObject.isCollide(monsterThree, bullet)) {
+                    Blast blast = new Blast(bullet.getX(), bullet.getY());
+                    blastList.add(blast);
                     calabashBulletList.remove(bullet);
                     monsterThreeList.remove(monsterThree);
 
@@ -560,6 +569,8 @@ public class GameController extends JPanel implements Runnable {
             paintMonsterBullets(g);
             // 绘制葫芦娃的子弹
             paintCalabashBullets(g);
+            // 绘制爆炸特效和移除爆炸特效
+            paintBlast(g);
         } else if (STATE == GameState.PAUSE) {
             g.setFont(new Font("黑体", Font.BOLD, 50));
             g.setColor(Color.WHITE);
@@ -584,6 +595,17 @@ public class GameController extends JPanel implements Runnable {
     public void paintOver(Graphics g) {
         // 绘制结束界面
         // TODO
+    }
+
+    private void paintBlast(Graphics g) {
+        int length = this.blastList.size();
+        for (int i = 0; i < length; i++) {
+            Blast blast = blastList.get(i);
+            blast.draw(g);
+            // 绘制后立即移除
+            blastList.remove(blast);
+            break;
+        }
     }
 
     private void paintCalabash(Graphics g) {

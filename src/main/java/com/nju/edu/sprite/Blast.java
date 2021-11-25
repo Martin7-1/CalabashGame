@@ -11,6 +11,6 @@ import java.awt.image.BufferedImage;
 public class Blast extends Sprite{
 
     public Blast(int x, int y) {
-        super(x, y, 100, 100, ReadImage.blast);
+        super(x - 20, y - 20, 100, 100, ReadImage.blast);
     }
 }
