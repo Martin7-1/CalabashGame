@@ -7,12 +7,12 @@ import com.nju.edu.sprite.*;
 import com.nju.edu.util.GameState;
 import com.nju.edu.util.ReadImage;
 import com.nju.edu.util.TimeControl;
+import com.nju.edu.world.World;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -61,6 +61,7 @@ public class GameController extends JPanel implements Runnable {
 
     private boolean isExited = false;
     private CalabashThread calabashThread = new CalabashThread();
+    private World world = World.getWorld();
 
     public GameController() {
         // 并发容器的使用
@@ -413,16 +414,16 @@ public class GameController extends JPanel implements Runnable {
             Random random = new Random();
             // 妖精一出现的时间
             if (time % MONSTER_ONE_APPEAR == 0) {
-                MonsterOne monsterOne = new MonsterOne(GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
+                MonsterOne monsterOne = new MonsterOne(world, GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
                 monsterOneList.add(monsterOne);
             }
             // 妖精二出现的时间
             if (time % MONSTER_TWO_APPEAR == 0) {
-                MonsterTwo monsterTwo = new MonsterTwo(GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
+                MonsterTwo monsterTwo = new MonsterTwo(world, GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
                 monsterTwoList.add(monsterTwo);
             }
             if (time % MONSTER_THREE_APPEAR == 0) {
-                MonsterThree monsterThree = new MonsterThree(GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
+                MonsterThree monsterThree = new MonsterThree(world, GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
                 monsterThreeList.add(monsterThree);
             }
         }
@@ -543,9 +544,7 @@ public class GameController extends JPanel implements Runnable {
      */
     @Override
     public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        BufferedImage bgImage = ReadImage.runningBackground;
-        g.drawImage(bgImage, 0, 0, 1080, 680, null);
+        paintWorld(g);
     }
 
     @Override
@@ -580,8 +579,17 @@ public class GameController extends JPanel implements Runnable {
         }
     }
 
-    public void paintStart(Graphics g) {
-        g.drawImage(ReadImage.startBackground, 0, 0, 1080, 680, null);
+    private void paintWorld(Graphics g) {
+        // 绘制世界地图
+        for (int x = 0; x < GameScreen.getWid(); x += 50) {
+            for (int y = 0; y < GameScreen.getHei(); y += 50) {
+                g.drawImage(world.get(x / 50, y / 50).getImage(), x, y, 50, 50, null);
+            }
+        }
+    }
+
+    private void paintStart(Graphics g) {
+        g.drawImage(ReadImage.startBackground, 0, 0, 1000, 1000, null);
         Font font = new Font("黑体", Font.PLAIN, 20);
         g.setColor(Color.WHITE);
         g.setFont(font);
@@ -592,7 +600,7 @@ public class GameController extends JPanel implements Runnable {
         g.drawString("作者:Martin", 50, 650);
     }
 
-    public void paintOver(Graphics g) {
+    private void paintOver(Graphics g) {
         // 绘制结束界面
         // TODO
     }

@@ -4,13 +4,14 @@ import com.nju.edu.bullet.CalabashBullet;
 import com.nju.edu.screen.GameScreen;
 import com.nju.edu.skill.Skill;
 import com.nju.edu.util.ReadImage;
+import com.nju.edu.world.World;
 
 /**
  * @author Zyi
  */
 public class Calabash extends Sprite {
 
-    private static final Calabash CALABASH = new Calabash(100, 320);
+    private static final Calabash CALABASH = new Calabash(World.getWorld(), 100, 320);
 
     public static Calabash getInstance() {
         return CALABASH;
@@ -24,42 +25,52 @@ public class Calabash extends Sprite {
     public int HP = 100;
     private int fireInterval = 120;
 
-    private Calabash(int x, int y) {
-        super(x, y, 100, 100, ReadImage.Calabash);
+    private Calabash(World world, int x, int y) {
+        super(world, 100, 100, ReadImage.Calabash);
+        setX(x);
+        setY(y);
+        world.put(this, getX(), getY());
         this.speed = 10;
     }
 
-    private Calabash(int x, int y, int speed) {
-        super(x, y, 100, 100, ReadImage.Calabash);
+    private Calabash(World world, int x, int y, int speed) {
+        super(world, 100, 100, ReadImage.Calabash);
+        setX(x);
+        setY(y);
+        world.put(this, getX(), getY());
         this.speed = speed;
     }
 
     public void moveUp() {
-        if (this.y - speed >= 0) {
-            this.y -= speed;
+        if (getY() - speed >= 0) {
+            setY(getY() - speed);
+            world.put(this, getX(), getY());
         }
     }
 
     public void moveDown() {
-        if (this.y + speed <= GameScreen.getHei() - 150) {
-            this.y += speed;
+        if (getY() + speed <= GameScreen.getHei() - 150) {
+            setY(getY() + speed);
+            world.put(this, getX(), getY());
         }
     }
 
     public void moveLeft() {
-        if (this.x - speed >= 0) {
-            this.x -= speed;
+        if (getX() - speed >= 0) {
+            setX(getX() - speed);
+            world.put(this, getX(), getY());
         }
     }
 
     public void moveRight() {
-        if (this.x + speed <= GameScreen.getWid() - 150) {
-            this.x += speed;
+        if (getX() + speed <= GameScreen.getWid() - 150) {
+            setX(getX() + speed);
+            world.put(this, getX(), getY());
         }
     }
 
     public CalabashBullet calabashFire() {
-        CalabashBullet bullet = new CalabashBullet(this.x + width, this.y + height / 2);
+        CalabashBullet bullet = new CalabashBullet(getX() + width, getY() + height / 2);
         return bullet;
     }
 

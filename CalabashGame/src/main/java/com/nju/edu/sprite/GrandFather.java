@@ -6,6 +6,7 @@ import com.nju.edu.skill.MoveSkill;
 import com.nju.edu.skill.RecoverSkill;
 import com.nju.edu.skill.Skill;
 import com.nju.edu.util.ReadImage;
+import com.nju.edu.world.World;
 
 import java.awt.image.BufferedImage;
 
@@ -15,14 +16,17 @@ import java.awt.image.BufferedImage;
  */
 public class GrandFather extends Sprite {
 
-    private static final GrandFather GRAND_FATHER = new GrandFather(0, 320);
+    private static final GrandFather GRAND_FATHER = new GrandFather(World.getWorld(), 0, 320);
 
     public static GrandFather getInstance() {
         return GRAND_FATHER;
     }
 
-    private GrandFather(int x, int y) {
-        super(x, y, 100, 100, ReadImage.GrandFather);
+    private GrandFather(World world, int x, int y) {
+        super(world, 100, 100, ReadImage.GrandFather);
+        this.setX(x);
+        this.setY(y);
+        world.put(this, x, y);
     }
 
     /**
@@ -33,26 +37,30 @@ public class GrandFather extends Sprite {
     private int speed = calabash.getSpeed();
 
     public void moveUp() {
-        if (this.y - speed >= 0) {
-            this.y -= speed;
+        if (getY() - speed >= 0) {
+            setY(getY() - speed);
+            world.put(this, getX(), getY());
         }
     }
 
     public void moveDown() {
-        if (this.y + speed <= GameScreen.getHei() - 150) {
-            this.y += speed;
+        if (getY() + speed <= GameScreen.getHei() - 150) {
+            setY(getY() + speed);
+            world.put(this, getX(), getY());
         }
     }
 
     public void moveLeft() {
-        if (this.x - speed >= 0) {
-            this.x -= speed;
+        if (getX() - speed >= 0) {
+            setX(getX() - speed);
+            world.put(this, getX(), getY());
         }
     }
 
     public void moveRight() {
-        if (this.x + speed <= GameScreen.getWid() - 150) {
-            this.x += speed;
+        if (getX() + speed <= GameScreen.getWid() - 150) {
+            setX(getX() + speed);
+            world.put(this, getX(), getY());
         }
     }
 
