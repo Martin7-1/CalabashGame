@@ -21,7 +21,6 @@ public class World {
     }
 
     private Tile<GameObject>[][] tiles;
-    private Tile<GameObject>[][] characters;
 
     @SuppressWarnings("unchecked")
     private World() {
@@ -42,15 +41,6 @@ public class World {
                 tiles[i][j].setThing(new Floor(this));
             }
         }
-    }
-
-    public void addGameObject(GameObject gameObject) {
-        // 在世界上绘制人物
-        int xPos = gameObject.getX();
-        int yPos = gameObject.getY();
-
-        this.characters[xPos][yPos] = new Tile<>(xPos, yPos);
-        this.characters[xPos][yPos].setThing(gameObject);
     }
 
     public GameObject get(int x, int y) {

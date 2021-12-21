@@ -37,7 +37,7 @@ public class MonsterThree extends Sprite implements Monster {
 
     @Override
     public MonsterBullet monsterFire() {
-        MonsterBullet bullet = new MonsterBullet(getX(), getY() + height / 2);
+        MonsterBullet bullet = new MonsterBullet(world, getX(), getY() + height / 2);
 
         return bullet;
     }

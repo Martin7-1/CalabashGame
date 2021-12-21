@@ -33,7 +33,7 @@ public class MonsterTwo extends Sprite implements Monster {
         // MonsterTwo的设定是会上下移动
         transferX(-speed);
         if (isGoAhead) {
-            if (getY() + speed <= GameScreen.getHei() - 200) {
+            if (getY() + speed <= GameScreen.getHei() / 50 - 2) {
                 transferY(speed);
             } else {
                 isGoAhead = false;
@@ -51,7 +51,7 @@ public class MonsterTwo extends Sprite implements Monster {
 
     @Override
     public MonsterBullet monsterFire() {
-        MonsterBullet bullet = new MonsterBullet(getX(), getY() + height / 2);
+        MonsterBullet bullet = new MonsterBullet(world, getX(), getY() + height / 2);
 
         return bullet;
     }

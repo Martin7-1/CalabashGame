@@ -49,6 +49,7 @@ public class GameController extends JPanel implements Runnable {
      */
     private JLabel skillLabel;
 
+    private World world = World.getWorld();
     private Calabash calabash;
     private GrandFather grandFather;
     private List<MonsterOne> monsterOneList;
@@ -61,7 +62,6 @@ public class GameController extends JPanel implements Runnable {
 
     private boolean isExited = false;
     private CalabashThread calabashThread = new CalabashThread();
-    private World world = World.getWorld();
 
     public GameController() {
         // 并发容器的使用
@@ -114,7 +114,7 @@ public class GameController extends JPanel implements Runnable {
             for (int j = 0; j < calabashBulletLength; j++) {
                 CalabashBullet bullet = calabashBulletList.get(j);
                 if (GameObject.isCollide(monsterOne, bullet)) {
-                    Blast blast = new Blast(bullet.getX(), bullet.getY());
+                    Blast blast = new Blast(world, bullet.getX(), bullet.getY());
                     blastList.add(blast);
                     calabashBulletList.remove(bullet);
                     monsterOneList.remove(monsterOne);
@@ -139,7 +139,7 @@ public class GameController extends JPanel implements Runnable {
             for (int j = 0; j < calabashBulletLength; j++) {
                 CalabashBullet bullet = calabashBulletList.get(j);
                 if (GameObject.isCollide(monsterTwo, bullet)) {
-                    Blast blast = new Blast(bullet.getX(), bullet.getY());
+                    Blast blast = new Blast(world, bullet.getX(), bullet.getY());
                     blastList.add(blast);
                     calabashBulletList.remove(bullet);
                     monsterTwoList.remove(monsterTwo);
@@ -162,7 +162,7 @@ public class GameController extends JPanel implements Runnable {
             for (int j = 0; j < calabashBulletLength; j++) {
                 CalabashBullet bullet = calabashBulletList.get(j);
                 if (GameObject.isCollide(monsterThree, bullet)) {
-                    Blast blast = new Blast(bullet.getX(), bullet.getY());
+                    Blast blast = new Blast(world, bullet.getX(), bullet.getY());
                     blastList.add(blast);
                     calabashBulletList.remove(bullet);
                     monsterThreeList.remove(monsterThree);

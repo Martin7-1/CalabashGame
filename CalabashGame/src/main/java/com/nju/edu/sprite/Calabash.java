@@ -11,9 +11,12 @@ import com.nju.edu.world.World;
  */
 public class Calabash extends Sprite {
 
-    private static final Calabash CALABASH = new Calabash(World.getWorld(), 100, 320);
+    private static Calabash CALABASH;
 
     public static Calabash getInstance() {
+        if (CALABASH == null) {
+            CALABASH = new Calabash(World.getWorld(), 10, 32);
+        }
         return CALABASH;
     }
 
@@ -70,7 +73,7 @@ public class Calabash extends Sprite {
     }
 
     public CalabashBullet calabashFire() {
-        CalabashBullet bullet = new CalabashBullet(getX() + width, getY() + height / 2);
+        CalabashBullet bullet = new CalabashBullet(world, getX() + width, getY() + height / 2);
         return bullet;
     }
 

@@ -40,6 +40,8 @@ public abstract class GameObject {
         this.width = width;
         this.height = height;
         this.image = image;
+        // 初始化tile
+        this.tile = new Tile<>();
     }
 
     /**
