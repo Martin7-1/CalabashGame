@@ -1,32 +1,34 @@
 package com.nju.edu.sprite;
 
+import com.nju.edu.control.GameController;
 import com.nju.edu.screen.GameScreen;
 import com.nju.edu.skill.CDSkill;
 import com.nju.edu.skill.MoveSkill;
 import com.nju.edu.skill.RecoverSkill;
 import com.nju.edu.skill.Skill;
 import com.nju.edu.util.ReadImage;
-import com.nju.edu.world.World;
 
-import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
 /**
  * 爷爷类
  * @author Zyi
  */
-public class GrandFather extends Sprite {
+public class GrandFather extends Sprite implements Serializable {
 
-    private static final GrandFather GRAND_FATHER = new GrandFather(World.getWorld(), 0, 320);
+    private static final GrandFather GRAND_FATHER = new GrandFather(0, 320);
+    private static final long serialVersionUID = -4820690048859461999L;
 
     public static GrandFather getInstance() {
         return GRAND_FATHER;
     }
 
-    private GrandFather(World world, int x, int y) {
-        super(world, 100, 100, ReadImage.GrandFather);
-        this.setX(x);
-        this.setY(y);
-        world.put(this, x, y);
+    private GrandFather(int x, int y) {
+        super(x, y, 100, 100, ReadImage.GrandFather);
+    }
+
+    public GrandFather() {
+        // serializable
     }
 
     /**
@@ -37,30 +39,26 @@ public class GrandFather extends Sprite {
     private int speed = calabash.getSpeed();
 
     public void moveUp() {
-        if (getY() - speed >= 0) {
-            setY(getY() - speed);
-            world.put(this, getX(), getY());
+        if (this.y - speed >= 0) {
+            this.y -= speed;
         }
     }
 
     public void moveDown() {
-        if (getY() + speed <= GameScreen.getHei() - 150) {
-            setY(getY() + speed);
-            world.put(this, getX(), getY());
+        if (this.y + speed <= GameScreen.getHei() - 150) {
+            this.y += speed;
         }
     }
 
     public void moveLeft() {
-        if (getX() - speed >= 0) {
-            setX(getX() - speed);
-            world.put(this, getX(), getY());
+        if (this.x - speed >= 0) {
+            this.x -= speed;
         }
     }
 
     public void moveRight() {
-        if (getX() + speed <= GameScreen.getWid() - 150) {
-            setX(getX() + speed);
-            world.put(this, getX(), getY());
+        if (this.x + speed <= GameScreen.getWid() - 150) {
+            this.x += speed;
         }
     }
 

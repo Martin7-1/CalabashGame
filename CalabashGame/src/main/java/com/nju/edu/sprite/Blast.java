@@ -1,7 +1,6 @@
 package com.nju.edu.sprite;
 
 import com.nju.edu.util.ReadImage;
-import com.nju.edu.world.World;
 
 import java.awt.image.BufferedImage;
 
@@ -11,10 +10,7 @@ import java.awt.image.BufferedImage;
  */
 public class Blast extends Sprite{
 
-    public Blast(World world, int x, int y) {
-        super(world, 100, 100, ReadImage.blast);
-        setX(x - 20);
-        setY(y - 20);
-        world.put(this, getX(), getY());
+    public Blast(int x, int y) {
+        super(x - 20, y - 20, 100, 100, ReadImage.blast);
     }
 }

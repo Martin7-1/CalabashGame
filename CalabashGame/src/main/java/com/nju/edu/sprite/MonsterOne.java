@@ -2,26 +2,27 @@ package com.nju.edu.sprite;
 
 import com.nju.edu.bullet.MonsterBullet;
 import com.nju.edu.util.ReadImage;
-import com.nju.edu.world.World;
+
+import java.io.Serializable;
 
 /**
  * @author Zyi
  */
-public class MonsterOne extends Sprite implements Monster {
+public class MonsterOne extends Sprite implements Monster, Serializable {
 
-    public MonsterOne(World world, int x, int y) {
-        super(world, 100, 100, ReadImage.MonsterOne);
-        setX(x);
-        setY(y);
-        world.put(this, getX(), getY());
+    private static final long serialVersionUID = 4531157429822834022L;
+
+    public MonsterOne() {
+
+    }
+
+    public MonsterOne(int x, int y) {
+        super(x, y, 100, 100, ReadImage.MonsterOne);
         this.speed = 6;
     }
 
-    public MonsterOne(World world, int x, int y, int speed) {
-        super(world, 40, 40, ReadImage.MonsterOne);
-        setX(x);
-        setY(y);
-        world.put(this, getX(), getY());
+    public MonsterOne(int x, int y, int speed) {
+        super(x, y, 40, 40, ReadImage.MonsterOne);
         this.speed = speed;
     }
 
@@ -29,12 +30,12 @@ public class MonsterOne extends Sprite implements Monster {
     public void move(long time) {
         // 游戏的怪物都是从左边向右边走的
         // monsterOne的设定就是很慢的朝左走
-        setX(getX() - speed);
+        this.x -= speed;
     }
 
     @Override
     public MonsterBullet monsterFire() {
-        MonsterBullet bullet = new MonsterBullet(world, getX(), getY() + height / 2);
+        MonsterBullet bullet = new MonsterBullet(this.x, this.y + height / 2);
 
         return bullet;
     }

@@ -1,8 +1,5 @@
 package com.nju.edu.sprite;
 
-import com.nju.edu.world.Tile;
-import com.nju.edu.world.World;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -11,6 +8,14 @@ import java.awt.image.BufferedImage;
  */
 public abstract class GameObject {
 
+    /**
+     * 物体的x坐标
+     */
+    protected int x;
+    /**
+     * 物体的y坐标
+     */
+    protected int y;
     /**
      * 物体的宽度
      */
@@ -24,24 +29,16 @@ public abstract class GameObject {
      */
     BufferedImage image;
 
-    protected World world;
-    public Tile<? extends GameObject> tile;
+    public GameObject() {
 
-    public void setTile(Tile<? extends GameObject> tile) {
-        this.tile = tile;
     }
 
-    public BufferedImage getImage() {
-        return this.image;
-    }
-
-    public GameObject(World world, int width, int height, BufferedImage image) {
-        this.world = world;
+    public GameObject(int x, int y, int width, int height, BufferedImage image) {
+        this.x = x;
+        this.y = y;
         this.width = width;
         this.height = height;
         this.image = image;
-        // 初始化tile
-        this.tile = new Tile<>();
     }
 
     /**
@@ -65,10 +62,10 @@ public abstract class GameObject {
      */
     public static boolean isCollide(GameObject g1, GameObject g2) {
         //step1: 求出两个矩形的中心点
-        int f1x = g1.tile.getxPos() + g1.width / 2;
-        int f1y = g1.tile.getyPos() + g1.height / 2;
-        int f2x = g2.tile.getxPos() + g2.width / 2;
-        int f2y = g2.tile.getyPos() + g2.height / 2;
+        int f1x = g1.x + g1.width / 2;
+        int f1y = g1.y + g1.height / 2;
+        int f2x = g2.x + g2.width / 2;
+        int f2y = g2.y + g2.height / 2;
 
         //step2: 横向和纵向碰撞检测
         boolean H = Math.abs(f1x - f2x) < (g1.width + g2.width)/2;
@@ -84,8 +81,8 @@ public abstract class GameObject {
      * @param y 新的y坐标
      */
     public void setPosition(int x, int y) {
-        this.tile.setxPos(x);
-        this.tile.setyPos(y);
+        this.x = x;
+        this.y = y;
     }
 
     /**
@@ -94,35 +91,23 @@ public abstract class GameObject {
      * @param dy y坐标的偏移量
      */
     public void transfer(int dx, int dy) {
-        this.tile.setxPos(this.tile.getxPos() + dx);
-        this.tile.setyPos(this.tile.getyPos() + dy);
-    }
-
-    /**
-     * TODO: 将游戏物体的移动替换成调用以下两个方法
-     * @param dx 移动的距离
-     */
-    public void transferX(int dx) {
-        this.tile.setxPos(getX() + dx);
-    }
-
-    public void transferY(int dy) {
-        this.tile.setyPos(getY() + dy);
+        this.x += dx;
+        this.y += dy;
     }
 
     public int getX() {
-        return this.tile.getxPos();
+        return this.x;
     }
 
     public void setX(int newX) {
-        this.tile.setxPos(newX);
+        this.x = newX;
     }
 
     public int getY() {
-        return this.tile.getyPos();
+        return this.y;
     }
 
     public void setY(int newY) {
-        this.tile.setyPos(newY);
+        this.y = newY;
     }
 }

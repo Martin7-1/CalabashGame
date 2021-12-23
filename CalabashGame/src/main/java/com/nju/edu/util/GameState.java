@@ -20,5 +20,9 @@ public enum GameState {
     /**
      * 游戏结束
      */
-    GAME_OVER;
+    GAME_OVER,
+    /**
+     * 加载游戏
+     */
+    GAME_LOAD;
 }

@@ -1,5 +1,7 @@
 package com.nju.edu.screen;
 
+import com.nju.edu.control.GameController;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -17,12 +19,12 @@ public class RenderThread implements Runnable {
      * 两次绘制之间相隔的时间
      */
     private final int interval;
-    public GameScreen gameScreen;
+    public GameController gameController;
 
-    public RenderThread(GameScreen gameScreen) {
-        this.gameScreen = gameScreen;
+    public RenderThread(GameController gameController) {
+        this.gameController = gameController;
         // 计算出隔多久要刷新一次屏幕(单位为毫秒)
-        interval = 1000 / this.gameScreen.getFps();
+        interval = 1000 / this.gameController.getFps();
 
         // test
         System.out.println("[Render]Created");
@@ -35,7 +37,7 @@ public class RenderThread implements Runnable {
 
         while (!isExited) {
             // 强制刷新
-            this.gameScreen.repaint();
+            this.gameController.repaint();
             try {
                 // 每隔一定时间渲染一次，以实现稳定的fps
                 TimeUnit.MILLISECONDS.sleep(interval);

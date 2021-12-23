@@ -1,9 +1,12 @@
 package com.nju.edu.screen;
 
 import com.nju.edu.control.GameController;
+import com.nju.edu.util.GameState;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,13 +14,14 @@ import java.util.concurrent.Executors;
  * @author Zyi
  */
 public class GameScreen extends JFrame {
-    /**
-     * 用一个单独线程池来管理fps
-     */
-    private ExecutorService render = Executors.newSingleThreadExecutor();
-    private static final int WIDTH = 1000;
-    private static final int HEIGHT = 1000;
-    private GameController gameController = new GameController();
+    private static final GameScreen GAME_SCREEN = new GameScreen("Calabash Game", 30, Color.WHITE);
+
+    public static GameScreen getInstance() {
+        return GAME_SCREEN;
+    }
+    private static final int WIDTH = 1080;
+    private static final int HEIGHT = 680;
+    private GameController gameController;
 
     private final String windowTitle;
     private final Color bgColor;
@@ -25,15 +29,13 @@ public class GameScreen extends JFrame {
     public GameScreen(String windowTitle, int fps, Color bgColor) {
         this.windowTitle = windowTitle;
         this.fps = fps;
+        gameController = new GameController(fps);
         this.bgColor = bgColor;
 
         createScreen();
-        this.render.execute(new RenderThread(this));
         this.gameController.setFocusable(true);
         this.gameController.requestFocus();
         this.add(gameController, BorderLayout.CENTER);
-
-        render.shutdown();
     }
 
     /**

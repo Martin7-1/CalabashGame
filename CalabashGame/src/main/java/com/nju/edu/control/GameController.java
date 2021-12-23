@@ -3,16 +3,19 @@ package com.nju.edu.control;
 import com.nju.edu.bullet.CalabashBullet;
 import com.nju.edu.bullet.MonsterBullet;
 import com.nju.edu.screen.GameScreen;
+import com.nju.edu.screen.RenderThread;
+import com.nju.edu.skill.SkillName;
 import com.nju.edu.sprite.*;
 import com.nju.edu.util.GameState;
 import com.nju.edu.util.ReadImage;
 import com.nju.edu.util.TimeControl;
-import com.nju.edu.world.World;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -42,6 +45,12 @@ public class GameController extends JPanel implements Runnable {
      */
     private ExecutorService executor = Executors.newCachedThreadPool();
 
+    /**
+     * 用一个单独线程池来管理fps
+     */
+    private ExecutorService render = Executors.newSingleThreadExecutor();
+    private int fps;
+
     private JLabel scoreLabel;
     private JLabel HPLabel;
     /**
@@ -49,7 +58,6 @@ public class GameController extends JPanel implements Runnable {
      */
     private JLabel skillLabel;
 
-    private World world = World.getWorld();
     private Calabash calabash;
     private GrandFather grandFather;
     private List<MonsterOne> monsterOneList;
@@ -57,13 +65,13 @@ public class GameController extends JPanel implements Runnable {
     private List<MonsterThree> monsterThreeList;
     private List<MonsterBullet> monsterBulletList;
     private List<CalabashBullet> calabashBulletList;
-    // TODO
     private List<Blast> blastList;
 
     private boolean isExited = false;
     private CalabashThread calabashThread = new CalabashThread();
 
-    public GameController() {
+    public GameController(int fps) {
+        this.fps = fps;
         // 并发容器的使用
         // 线程安全的arrayList
         this.monsterOneList = new CopyOnWriteArrayList<>();
@@ -78,6 +86,7 @@ public class GameController extends JPanel implements Runnable {
 
         resetBoard();
 
+        this.render.execute(new RenderThread(this));
         executor.execute(calabashThread);
         executor.execute(new GrandfatherThread());
         executor.execute(new MonsterThread());
@@ -85,6 +94,11 @@ public class GameController extends JPanel implements Runnable {
         executor.execute(this);
 
         executor.shutdown();
+        render.shutdown();
+    }
+
+    public int getFps() {
+        return this.fps;
     }
 
     @Override
@@ -114,7 +128,7 @@ public class GameController extends JPanel implements Runnable {
             for (int j = 0; j < calabashBulletLength; j++) {
                 CalabashBullet bullet = calabashBulletList.get(j);
                 if (GameObject.isCollide(monsterOne, bullet)) {
-                    Blast blast = new Blast(world, bullet.getX(), bullet.getY());
+                    Blast blast = new Blast(bullet.getX(), bullet.getY());
                     blastList.add(blast);
                     calabashBulletList.remove(bullet);
                     monsterOneList.remove(monsterOne);
@@ -139,7 +153,7 @@ public class GameController extends JPanel implements Runnable {
             for (int j = 0; j < calabashBulletLength; j++) {
                 CalabashBullet bullet = calabashBulletList.get(j);
                 if (GameObject.isCollide(monsterTwo, bullet)) {
-                    Blast blast = new Blast(world, bullet.getX(), bullet.getY());
+                    Blast blast = new Blast(bullet.getX(), bullet.getY());
                     blastList.add(blast);
                     calabashBulletList.remove(bullet);
                     monsterTwoList.remove(monsterTwo);
@@ -162,7 +176,7 @@ public class GameController extends JPanel implements Runnable {
             for (int j = 0; j < calabashBulletLength; j++) {
                 CalabashBullet bullet = calabashBulletList.get(j);
                 if (GameObject.isCollide(monsterThree, bullet)) {
-                    Blast blast = new Blast(world, bullet.getX(), bullet.getY());
+                    Blast blast = new Blast(bullet.getX(), bullet.getY());
                     blastList.add(blast);
                     calabashBulletList.remove(bullet);
                     monsterThreeList.remove(monsterThree);
@@ -278,10 +292,21 @@ public class GameController extends JPanel implements Runnable {
                     calabash.useSkill();
                     // 只能够使用一次技能
                     calabash.setFirstUse();
-                    if ("RecoverSkill".equals(calabash.getCurSkill().getName())) {
+                    if (calabash.getCurSkill().getName() == SkillName.RECOVER_SKILL) {
                         // 更改血量的显示
                         HPLabel.setText("HP: " + calabash.getHP());
                     }
+                }
+            } else if (getKeyDown(KeyEvent.VK_L)) {
+                try {
+                    loadData();
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                if (GameController.STATE == GameState.START) {
+                    STATE = GameState.RUNNING;
+                } else if (GameController.STATE == GameState.GAME_OVER) {
+                    STATE = GameState.RUNNING;
                 }
             }
         }
@@ -414,16 +439,16 @@ public class GameController extends JPanel implements Runnable {
             Random random = new Random();
             // 妖精一出现的时间
             if (time % MONSTER_ONE_APPEAR == 0) {
-                MonsterOne monsterOne = new MonsterOne(world, GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
+                MonsterOne monsterOne = new MonsterOne(GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
                 monsterOneList.add(monsterOne);
             }
             // 妖精二出现的时间
             if (time % MONSTER_TWO_APPEAR == 0) {
-                MonsterTwo monsterTwo = new MonsterTwo(world, GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
+                MonsterTwo monsterTwo = new MonsterTwo(GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
                 monsterTwoList.add(monsterTwo);
             }
             if (time % MONSTER_THREE_APPEAR == 0) {
-                MonsterThree monsterThree = new MonsterThree(world, GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
+                MonsterThree monsterThree = new MonsterThree(GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
                 monsterThreeList.add(monsterThree);
             }
         }
@@ -503,6 +528,12 @@ public class GameController extends JPanel implements Runnable {
         JButton stopButton = new JButton("暂停");
         stopButton.setForeground(Color.RED);
         stopButton.setContentAreaFilled(false);
+
+        // 游戏存储按钮
+        JButton storeButton = new JButton("store");
+        storeButton.setForeground(Color.RED);
+        storeButton.setContentAreaFilled(false);
+
         // 继续按钮添加监听
         goOnButton.addActionListener(e -> {
             if (STATE == GameState.PAUSE) {
@@ -519,6 +550,16 @@ public class GameController extends JPanel implements Runnable {
                 STATE = GameState.PAUSE;
             }
         });
+
+        // 存储按钮添加监听
+        storeButton.addActionListener(e -> {
+            try {
+                storeData();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
         // 新建一个面板，把按钮和标签都加入到面板中间
         JPanel labelPanel = new JPanel();
         // 设置背景颜色为黑色
@@ -530,6 +571,8 @@ public class GameController extends JPanel implements Runnable {
         labelPanel.add(skillLabel);
         labelPanel.add(goOnButton);
         labelPanel.add(stopButton);
+        labelPanel.add(storeButton);
+
         // JPanel 面板添加这个面板
         this.add(labelPanel);
     }
@@ -544,7 +587,9 @@ public class GameController extends JPanel implements Runnable {
      */
     @Override
     public void paintComponent(Graphics g) {
-        paintWorld(g);
+        super.paintComponent(g);
+        BufferedImage bgImage = ReadImage.runningBackground;
+        g.drawImage(bgImage, 0, 0, 1080, 680, null);
     }
 
     @Override
@@ -579,28 +624,20 @@ public class GameController extends JPanel implements Runnable {
         }
     }
 
-    private void paintWorld(Graphics g) {
-        // 绘制世界地图
-        for (int x = 0; x < GameScreen.getWid(); x += 50) {
-            for (int y = 0; y < GameScreen.getHei(); y += 50) {
-                g.drawImage(world.get(x / 50, y / 50).getImage(), x, y, 50, 50, null);
-            }
-        }
-    }
-
-    private void paintStart(Graphics g) {
-        g.drawImage(ReadImage.startBackground, 0, 0, 1000, 1000, null);
+    public void paintStart(Graphics g) {
+        g.drawImage(ReadImage.startBackground, 0, 0, 1080, 680, null);
         Font font = new Font("黑体", Font.PLAIN, 20);
         g.setColor(Color.WHITE);
         g.setFont(font);
-        g.drawString("按ENTER键开始游戏", 50, 450);
-        g.drawString("J:发射子弹", 50, 500);
-        g.drawString("X:使用技能", 50, 550);
+        g.drawString("按ENTER键开始游戏", 50, 400);
+        g.drawString("J:发射子弹", 50, 450);
+        g.drawString("X:使用技能", 50, 500);
+        g.drawString("L:加载存档", 50, 550);
         g.drawString("方向键:↑,↓,←,→", 50, 600);
         g.drawString("作者:Martin", 50, 650);
     }
 
-    private void paintOver(Graphics g) {
+    public void paintOver(Graphics g) {
         // 绘制结束界面
         // TODO
     }
@@ -648,5 +685,162 @@ public class GameController extends JPanel implements Runnable {
         for (MonsterBullet bullet : this.monsterBulletList) {
             bullet.draw(g);
         }
+    }
+
+    /**
+     * 保存当前游戏的数据
+     * @throws IOException IO异常
+     */
+    public void storeData() throws IOException {
+        // 保存当前有的葫芦娃、爷爷和妖精的属性即可
+        // 序列化保存妖精一
+        final String root = "src/main/resources/data/";
+        FileOutputStream fileMonsterOne = new FileOutputStream(root + "monster_one.ser");
+        ObjectOutputStream outMonsterOne = new ObjectOutputStream(fileMonsterOne);
+        for (MonsterOne monsterOne : monsterOneList) {
+            outMonsterOne.writeObject(monsterOne);
+        }
+
+        // 序列化保存妖精二
+        FileOutputStream fileMonsterTwo = new FileOutputStream(root + "monster_two.ser");
+        ObjectOutputStream outMonsterTwo = new ObjectOutputStream(fileMonsterTwo);
+
+        for (MonsterTwo monsterTwo : monsterTwoList) {
+            outMonsterTwo.writeObject(monsterTwo);
+        }
+
+        // 序列化保存妖精三
+        FileOutputStream fileMonsterThree = new FileOutputStream(root + "monster_three.ser");
+        ObjectOutputStream outMonsterThree = new ObjectOutputStream(fileMonsterThree);
+
+        for (MonsterThree monsterThree : monsterThreeList) {
+            outMonsterThree.writeObject(monsterThree);
+        }
+
+        // 序列化保存葫芦娃
+        FileOutputStream fileCalabash = new FileOutputStream(root + "calabash.ser");
+        ObjectOutputStream outCalabash = new ObjectOutputStream(fileCalabash);
+        outCalabash.writeObject(calabash);
+
+        // 序列化保存爷爷
+        FileOutputStream fileGrandfather = new FileOutputStream(root + "grandfather.ser");
+        ObjectOutputStream outGrandFather = new ObjectOutputStream(fileGrandfather);
+        outGrandFather.writeObject(grandFather);
+
+        // 序列化保存葫芦娃子弹
+        FileOutputStream fileCalabashBullet = new FileOutputStream(root + "calabash_bullet.ser");
+        ObjectOutputStream outCalabashBullet = new ObjectOutputStream(fileCalabashBullet);
+
+        for (CalabashBullet bullet : calabashBulletList) {
+            outCalabashBullet.writeObject(bullet);
+        }
+
+        // 序列化保存妖精子弹
+        FileOutputStream fileMonsterBullet = new FileOutputStream(root + "monster_bullet.ser");
+        ObjectOutputStream outMonsterBullet = new ObjectOutputStream(fileMonsterBullet);
+
+        for (MonsterBullet bullet : monsterBulletList) {
+            outMonsterBullet.writeObject(bullet);
+        }
+
+        System.out.println("存储成功");
+        fileMonsterOne.close();
+        outMonsterOne.close();
+        fileMonsterTwo.close();
+        outMonsterTwo.close();
+        fileMonsterThree.close();
+        outMonsterThree.close();
+
+        fileCalabash.close();
+        outCalabash.close();
+        fileGrandfather.close();
+        outGrandFather.close();
+        fileCalabashBullet.close();
+        outCalabashBullet.close();
+        fileMonsterBullet.close();
+        outMonsterBullet.close();
+    }
+
+    /**
+     * 加载数据
+     * @throws IOException IO异常
+     * @throws ClassNotFoundException 找不到该类型异常
+     */
+    public void loadData() throws IOException, ClassNotFoundException {
+        // 读取文件
+        final String root = "src/main/resources/data/";
+        FileInputStream fileMonsterOne = new FileInputStream(root + "monster_one.ser");
+        ObjectInputStream inMonsterOne = new ObjectInputStream(fileMonsterOne);
+
+        MonsterOne monsterOne;
+        while (inMonsterOne.available() > 0) {
+            monsterOne = (MonsterOne) inMonsterOne.readObject();
+            this.monsterOneList.add(monsterOne);
+        }
+
+        FileInputStream fileMonsterTwo = new FileInputStream(root + "monster_two.ser");
+        ObjectInputStream inMonsterTwo = new ObjectInputStream(fileMonsterTwo);
+
+        MonsterTwo monsterTwo;
+        while (inMonsterTwo.available() > 0) {
+            monsterTwo = (MonsterTwo) inMonsterTwo.readObject();
+            this.monsterTwoList.add(monsterTwo);
+        }
+
+        FileInputStream fileMonsterThree = new FileInputStream(root + "monster_three.ser");
+        ObjectInputStream inMonsterThree = new ObjectInputStream(fileMonsterThree);
+
+        MonsterThree monsterThree;
+        while (inMonsterThree.available() > 0) {
+            monsterThree = (MonsterThree) inMonsterThree.readObject();
+            this.monsterThreeList.add(monsterThree);
+        }
+
+        FileInputStream fileCalabash = new FileInputStream(root + "calabash.ser");
+        ObjectInputStream inCalabash = new ObjectInputStream(fileCalabash);
+        this.calabash = (Calabash) inCalabash.readObject();
+
+        FileInputStream fileGrandfather = new FileInputStream(root + "grandfather.ser");
+        ObjectInputStream inGrandfather = new ObjectInputStream(fileGrandfather);
+        this.grandFather = (GrandFather) inGrandfather.readObject();
+
+        // 读取子弹
+        FileInputStream fileCalabashBullet = new FileInputStream(root + "calabash_bullet.ser");
+        ObjectInputStream inCalabashBullet = new ObjectInputStream(fileCalabashBullet);
+
+        CalabashBullet calabashBullet;
+        while (inCalabashBullet.available() > 0) {
+            calabashBullet = (CalabashBullet) inCalabashBullet.readObject();
+            this.calabashBulletList.add(calabashBullet);
+        }
+
+        FileInputStream fileMonsterBullet = new FileInputStream(root + "monster_bullet.ser");
+        ObjectInputStream inMonsterBullet = new ObjectInputStream(fileMonsterBullet);
+
+        MonsterBullet monsterBullet;
+        while (inMonsterBullet.available() > 0) {
+            monsterBullet = (MonsterBullet) inMonsterBullet.readObject();
+            this.monsterBulletList.add(monsterBullet);
+        }
+
+        System.out.println("load succeed!");
+        fileMonsterOne.close();
+        inMonsterOne.close();
+        fileMonsterTwo.close();
+        inMonsterTwo.close();
+        fileMonsterThree.close();
+        inMonsterThree.close();
+        fileCalabash.close();
+        inCalabash.close();
+        fileGrandfather.close();
+        inGrandfather.close();
+        fileCalabashBullet.close();
+        inCalabashBullet.close();
+        fileMonsterBullet.close();
+        inMonsterBullet.close();
+    }
+
+    public Calabash getCalabash() {
+        return this.calabash;
     }
 }

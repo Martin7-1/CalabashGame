@@ -10,6 +10,6 @@ import java.awt.*;
 public class Game {
 
     public static void start() {
-        GameScreen gameScreen = new GameScreen("CalabashGame", 30, Color.WHITE);
+        GameScreen gameScreen = GameScreen.getInstance();
     }
 }

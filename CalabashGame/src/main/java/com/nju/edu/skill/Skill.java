@@ -27,5 +27,5 @@ public interface Skill {
      * 获得当前的技能
      * @return 技能名字
      */
-    String getName();
+    SkillName getName();
 }

@@ -15,7 +15,7 @@ public class CalabashTest {
 
     @Before
     public void setUp() {
-        calabash = Calabash.getInstance();
+        calabash = new Calabash();
     }
 
     @After
