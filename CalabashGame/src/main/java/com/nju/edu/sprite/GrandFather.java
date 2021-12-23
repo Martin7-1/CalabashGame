@@ -2,10 +2,7 @@ package com.nju.edu.sprite;
 
 import com.nju.edu.control.GameController;
 import com.nju.edu.screen.GameScreen;
-import com.nju.edu.skill.CDSkill;
-import com.nju.edu.skill.MoveSkill;
-import com.nju.edu.skill.RecoverSkill;
-import com.nju.edu.skill.Skill;
+import com.nju.edu.skill.*;
 import com.nju.edu.util.ReadImage;
 
 import java.io.Serializable;
@@ -88,7 +85,7 @@ public class GrandFather extends Sprite implements Serializable {
 
     public void clearSkillImpact() {
         if (calabash.haveSkill()) {
-            if ("MoveSkill".equals(calabash.getCurSkill().getName()) && this.speed == 15) {
+            if (calabash.getCurSkill().getName() == SkillName.MOVE_SKILL && this.speed == 15) {
                 this.speed -= 5;
             }
         }

@@ -1,21 +1,23 @@
 package com.nju.edu.sprite;
 
+import com.nju.edu.bullet.CalabashBullet;
 import com.nju.edu.skill.CDSkill;
 import com.nju.edu.skill.MoveSkill;
 import com.nju.edu.skill.RecoverSkill;
 import com.nju.edu.skill.Skill;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class CalabashTest {
 
-    Calabash calabash;
+    private static Calabash calabash;
 
-    @Before
-    public void setUp() {
-        calabash = new Calabash();
+    @BeforeClass
+    public static void setUp() {
+        calabash = Calabash.getInstance();
     }
 
     @After
@@ -49,5 +51,40 @@ public class CalabashTest {
         recoverSkill.start();
 
         assertEquals(90, calabash.getHP());
+    }
+
+    @Test
+    public void moveRightTest() {
+        calabash.moveRight();
+
+        assertEquals(110, calabash.getX());
+    }
+
+    @Test
+    public void moveLeftTest() {
+        calabash.moveLeft();
+
+        assertEquals(100, calabash.getX());
+    }
+
+    @Test
+    public void moveUpTest() {
+        calabash.moveUp();
+
+        assertEquals(310, calabash.getY());
+    }
+
+    @Test
+    public void moveDownTest() {
+        calabash.moveDown();
+
+        assertEquals(320, calabash.getY());
+    }
+
+    @Test
+    public void bulletTest() {
+        CalabashBullet bullet = calabash.calabashFire();
+
+        assertEquals(bullet.getX(), calabash.getX() + 100);
     }
 }
