@@ -7,11 +7,6 @@ import java.awt.*;
  * @author Zyi
  */
 public class GameScreen extends JFrame {
-    private static final GameScreen GAME_SCREEN = new GameScreen("Calabash Game", Color.WHITE);
-
-    public static GameScreen getInstance() {
-        return GAME_SCREEN;
-    }
     private static final int WIDTH = 1080;
     private static final int HEIGHT = 680;
 

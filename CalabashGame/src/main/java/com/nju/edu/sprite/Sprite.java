@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
  */
 public class Sprite extends GameObject {
 
+    private static final long serialVersionUID = -686213037989725695L;
     protected int speed = 1;
 
     public Sprite() {

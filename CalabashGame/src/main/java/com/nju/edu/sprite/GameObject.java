@@ -1,33 +1,39 @@
 package com.nju.edu.sprite;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 /**
  * @author Zyi
  */
-public abstract class GameObject {
+public abstract class GameObject implements Serializable {
 
+    private static final long serialVersionUID = 2841309359403190861L;
     /**
      * 物体的x坐标
      */
-    protected int x;
+    protected Integer x;
     /**
      * 物体的y坐标
      */
-    protected int y;
+    protected Integer y;
     /**
      * 物体的宽度
      */
-    protected int width;
+    protected Integer width;
     /**
      * 物体的高度
      */
-    protected int height;
+    protected Integer height;
     /**
      * 物体的图片
      */
-    BufferedImage image;
+    transient BufferedImage image;
 
     public GameObject() {
 
@@ -109,5 +115,16 @@ public abstract class GameObject {
 
     public void setY(int newY) {
         this.y = newY;
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        // 存储照片
+        ImageIO.write(this.image, "png", out);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        this.image = ImageIO.read(in);
     }
 }

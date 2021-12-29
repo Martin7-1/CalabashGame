@@ -6,27 +6,26 @@ import com.nju.edu.skill.Skill;
 import com.nju.edu.skill.SkillName;
 import com.nju.edu.util.ReadImage;
 
-import java.io.Serializable;
-
 /**
  * @author Zyi
  */
-public class Calabash extends Sprite implements Serializable {
+public class Calabash extends Sprite {
 
     private static final Calabash CALABASH = new Calabash(100, 320);
     private static final long serialVersionUID = -4970820453164850503L;
+    public Integer ID;
 
     public static Calabash getInstance() {
         return CALABASH;
     }
 
-    public transient Skill skill;
-    private boolean isFirstUse = true;
+    public Skill skill;
+    private Boolean isFirstUse = true;
     /**
      * 葫芦娃的血量
      */
-    public int HP = 100;
-    private int fireInterval = 120;
+    public Integer HP = 100;
+    private Integer fireInterval = 120;
 
     private Calabash(int x, int y) {
         super(x, y, 100, 100, ReadImage.Calabash);
@@ -160,5 +159,9 @@ public class Calabash extends Sprite implements Serializable {
 
     public void setFireInterval(int fireInterval) {
         this.fireInterval = fireInterval;
+    }
+
+    public void setID(int id) {
+        this.ID = id;
     }
 }

@@ -1,15 +1,17 @@
 package com.nju.edu.skill;
 
-import com.nju.edu.screen.GameScreen;
 import com.nju.edu.sprite.Calabash;
 import com.nju.edu.sprite.GrandFather;
+
+import java.io.Serializable;
 
 /**
  * 加快葫芦娃的移动能力
  * @author Zyi
  */
-public class MoveSkill implements Skill {
+public class MoveSkill implements Skill, Serializable {
 
+    private static final long serialVersionUID = 5395347668849596522L;
     private boolean haveSkill = false;
     private final SkillName name = SkillName.MOVE_SKILL;
     private Calabash calabash = Calabash.getInstance();

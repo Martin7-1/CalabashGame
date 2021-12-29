@@ -1,13 +1,16 @@
 package com.nju.edu.skill;
 
-import com.nju.edu.screen.GameScreen;
 import com.nju.edu.sprite.Calabash;
+
+import java.io.Serializable;
 
 /**
  * 发射子弹间隔时间为0的技能
  * @author Zyi
  */
-public class CDSkill implements Skill{
+public class CDSkill implements Skill, Serializable {
+
+    private static final long serialVersionUID = 7123129952830057508L;
 
     private boolean haveSkill = false;
     private final SkillName name = SkillName.CD_SKILL;

@@ -58,7 +58,8 @@ public class GameController extends JPanel implements Runnable {
      */
     private JLabel skillLabel;
 
-    private Calabash calabash;
+    private Calabash calabashOne;
+    private Calabash calabashTwo;
     private GrandFather grandFather;
     private List<MonsterOne> monsterOneList;
     private List<MonsterTwo> monsterTwoList;
@@ -73,20 +74,25 @@ public class GameController extends JPanel implements Runnable {
     private MonsterThread monsterThread;
     private TimeControl timeControl;
 
-    GrandFatherMouseAdapter adapter;
+    public void start() {
+        calabashOne = Calabash.getInstance();
+        grandFather = GrandFather.getInstance();
+        resetBoard();
+        executePool();
+    }
 
     /**
      * 直接开始游戏
      */
-    public void startGame() {
-        this.addKeyListener(calabashThread);
-        this.addMouseListener(adapter);
-        this.addMouseMotionListener(adapter);
-        this.requestFocus();
-
+    private void startGame() {
+        calabashOne = Calabash.getInstance();
+        grandFather = GrandFather.getInstance();
         resetBoard();
+        executePool();
+    }
 
-        this.render.execute(new RenderThread(this));
+    private void executePool() {
+        render.execute(new RenderThread(this));
         executor.execute(calabashThread);
         executor.execute(grandfatherThread);
         executor.execute(monsterThread);
@@ -100,8 +106,11 @@ public class GameController extends JPanel implements Runnable {
     /**
      * 加载存储好的游戏
      */
-    public void loadGame() {
-        // TODO
+    private void loadGame() throws IOException, ClassNotFoundException {
+        loadData();
+        // 强制repaint一次
+        resetBoard();
+        executePool();
     }
 
     public GameController(int fps) {
@@ -115,7 +124,6 @@ public class GameController extends JPanel implements Runnable {
         this.calabashBulletList = new CopyOnWriteArrayList<>();
         this.blastList = new CopyOnWriteArrayList<>();
         calabashThread = new CalabashThread();
-        adapter = new GrandFatherMouseAdapter();
         grandfatherThread = new GrandfatherThread();
         monsterThread = new MonsterThread();
         timeControl = new TimeControl();
@@ -222,18 +230,18 @@ public class GameController extends JPanel implements Runnable {
         int monsterBulletLength = monsterBulletList.size();
         for (int i = 0; i < monsterBulletLength; i++) {
             MonsterBullet bullet = monsterBulletList.get(i);
-            if (GameObject.isCollide(bullet, calabash)) {
+            if (GameObject.isCollide(bullet, calabashOne)) {
                 monsterBulletList.remove(bullet);
                 monsterBulletLength--;
                 // 一次造成的伤害为5点
                 // TODO:改成不同的妖精有不同的伤害
-                calabash.decreaseHP(5);
-                if (calabash.getHP() >= 0) {
-                    HPLabel.setText("HP: " + calabash.getHP());
+                calabashOne.decreaseHP(5);
+                if (calabashOne.getHP() >= 0) {
+                    HPLabel.setText("HP: " + calabashOne.getHP());
                 } else {
                     HPLabel.setText("HP: " + 0);
                 }
-                if (calabash.getHP() <= 0) {
+                if (calabashOne.getHP() <= 0) {
                     // 死亡，结束
                     STATE = GameState.GAME_OVER;
                 }
@@ -280,41 +288,46 @@ public class GameController extends JPanel implements Runnable {
             if (getKeyDown(KeyEvent.VK_W) || getKeyDown(KeyEvent.VK_UP)) {
                 // 向上走y值减小
                 // 判断会不会走出边界
-                calabash.moveUp();
+                calabashOne.moveUp();
+                grandFather.moveUp();
             } else if (getKeyDown(KeyEvent.VK_S) || getKeyDown(KeyEvent.VK_DOWN)) {
                 // 向下走y值增大
                 // 判断会不会走出边界
-                calabash.moveDown();
+                calabashOne.moveDown();
+                grandFather.moveDown();
             } else if (getKeyDown(KeyEvent.VK_A) || getKeyDown(KeyEvent.VK_LEFT)) {
                 // 向左走x值减小
                 // 判断会不会走出边界
-                calabash.moveLeft();
+                calabashOne.moveLeft();
+                grandFather.moveLeft();
             } else if (getKeyDown(KeyEvent.VK_D) || getKeyDown(KeyEvent.VK_RIGHT)) {
                 // 向右走x值增大
                 // 判断会不会走出边界
-                calabash.moveRight();
+                calabashOne.moveRight();
+                grandFather.moveRight();
             } else if (getKeyDown(KeyEvent.VK_J)) {
                 // 按j发射子弹
-                CalabashBullet bullet = calabash.calabashFire();
-                if (TIME % calabash.getFireInterval() == 0) {
+                CalabashBullet bullet = calabashOne.calabashFire();
+                if (TIME % calabashOne.getFireInterval() == 0) {
                     calabashBulletList.add(bullet);
                 }
             } else if (getKeyDown(KeyEvent.VK_ENTER)) {
                 if (GameController.STATE == GameState.START) {
                     STATE = GameState.RUNNING;
+                    // startGame();
                 } else if (GameController.STATE == GameState.GAME_OVER) {
                     STATE = GameState.RUNNING;
                     restart();
                 }
             } else if (getKeyDown(KeyEvent.VK_X)) {
                 // 按x使用技能
-                if (calabash.haveSkill() && calabash.isFirstUse()) {
-                    calabash.useSkill();
+                if (calabashOne.haveSkill() && calabashOne.isFirstUse()) {
+                    calabashOne.useSkill();
                     // 只能够使用一次技能
-                    calabash.setFirstUse();
-                    if (calabash.getCurSkill().getName() == SkillName.RECOVER_SKILL) {
+                    calabashOne.setFirstUse();
+                    if (calabashOne.getCurSkill().getName() == SkillName.RECOVER_SKILL) {
                         // 更改血量的显示
-                        HPLabel.setText("HP: " + calabash.getHP());
+                        HPLabel.setText("HP: " + calabashOne.getHP());
                     }
                 }
             } else if (getKeyDown(KeyEvent.VK_L)) {
@@ -493,11 +506,11 @@ public class GameController extends JPanel implements Runnable {
                 // 根据时间的间隔给予葫芦娃技能
                 if (TIME % GIVE_SKILL_INTERVAL == 0) {
                     // 清空moveSkill和cdSkill的效果
-                    calabash.clearSkillImpact();
+                    calabashOne.clearSkillImpact();
                     grandFather.clearSkillImpact();
                     grandFather.giveSkill();
-                    skillLabel.setText("curSkill: " + calabash.getCurSkill().getName());
-                    calabash.setFirstUse();
+                    skillLabel.setText("curSkill: " + calabashOne.getCurSkill().getName());
+                    calabashOne.setFirstUse();
                 }
 
                 try {
@@ -528,7 +541,7 @@ public class GameController extends JPanel implements Runnable {
         calabashBulletList.clear();
         STATE = GameState.START;
         score = 0;
-        calabash.resetHP();
+        calabashOne.resetHP();
         resetBoard();
     }
 
@@ -536,15 +549,12 @@ public class GameController extends JPanel implements Runnable {
         // 清空JPanel里的所有内容
         this.removeAll();
         this.addKeyListener(calabashThread);
-
-        // 葫芦娃的初始位置
-        calabash = Calabash.getInstance();
-        grandFather = GrandFather.getInstance();
+        this.requestFocus();
 
         // 初始化一些Label
         scoreLabel = new JLabel("Score: " + this.score);
         scoreLabel.setForeground(Color.RED);
-        HPLabel = new JLabel("HP: " + calabash.getHP());
+        HPLabel = new JLabel("HP: " + calabashOne.getHP());
         HPLabel.setForeground(Color.RED);
         skillLabel = new JLabel("curSkill: null");
         skillLabel.setForeground(Color.RED);
@@ -684,7 +694,7 @@ public class GameController extends JPanel implements Runnable {
     }
 
     private void paintCalabash(Graphics g) {
-        g.drawImage(ReadImage.Calabash, calabash.getX(), calabash.getY(), 100, 100, null);
+        g.drawImage(ReadImage.Calabash, calabashOne.getX(), calabashOne.getY(), 100, 100, null);
     }
 
     private void paintGrandfather(Graphics g) {
@@ -750,7 +760,7 @@ public class GameController extends JPanel implements Runnable {
         // 序列化保存葫芦娃
         FileOutputStream fileCalabash = new FileOutputStream(root + "calabash.ser");
         ObjectOutputStream outCalabash = new ObjectOutputStream(fileCalabash);
-        outCalabash.writeObject(calabash);
+        outCalabash.writeObject(calabashOne);
 
         // 序列化保存爷爷
         FileOutputStream fileGrandfather = new FileOutputStream(root + "grandfather.ser");
@@ -828,7 +838,7 @@ public class GameController extends JPanel implements Runnable {
 
         FileInputStream fileCalabash = new FileInputStream(root + "calabash.ser");
         ObjectInputStream inCalabash = new ObjectInputStream(fileCalabash);
-        this.calabash = (Calabash) inCalabash.readObject();
+        this.calabashOne = (Calabash) inCalabash.readObject();
 
         FileInputStream fileGrandfather = new FileInputStream(root + "grandfather.ser");
         ObjectInputStream inGrandfather = new ObjectInputStream(fileGrandfather);
@@ -870,7 +880,39 @@ public class GameController extends JPanel implements Runnable {
         inMonsterBullet.close();
     }
 
-    public Calabash getCalabash() {
-        return this.calabash;
+    public int getScore() {
+        return this.score;
+    }
+
+    public Calabash getCalabashOne() {
+        return this.calabashOne;
+    }
+
+    public void setCalabashTwo(Calabash calabash) {
+        this.calabashTwo = calabash;
+    }
+
+    public List<MonsterOne> getMonsterOneList() {
+        return monsterOneList;
+    }
+
+    public List<MonsterTwo> getMonsterTwoList() {
+        return monsterTwoList;
+    }
+
+    public List<MonsterThree> getMonsterThreeList() {
+        return monsterThreeList;
+    }
+
+    public List<CalabashBullet> getCalabashBulletList() {
+        return calabashBulletList;
+    }
+
+    public List<MonsterBullet> getMonsterBulletList() {
+        return monsterBulletList;
+    }
+
+    public GrandFather getGrandFather() {
+        return grandFather;
     }
 }

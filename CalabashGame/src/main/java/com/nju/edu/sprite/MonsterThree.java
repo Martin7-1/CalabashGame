@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * @author Zyi
  */
-public class MonsterThree extends Sprite implements Monster, Serializable {
+public class MonsterThree extends Sprite implements Monster {
 
     private static final long serialVersionUID = 3424717620188168556L;
 

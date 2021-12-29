@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * @author Zyi
  */
-public class MonsterTwo extends Sprite implements Monster, Serializable {
+public class MonsterTwo extends Sprite implements Monster {
 
     private static final long serialVersionUID = -7012375325311897529L;
     private boolean isGoAhead = true;

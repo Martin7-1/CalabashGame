@@ -1,13 +1,6 @@
 package com.nju.edu.server;
 
-import com.nju.edu.control.GameController;
-import com.nju.edu.screen.GameScreen;
-
-import java.awt.*;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -16,9 +9,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.Iterator;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 
 /**
  * @author Zyi
@@ -33,6 +25,7 @@ public class Server {
     private static final int PORT = 8080;
     private static final String ADDRESS = "localhost";
     private int playerNumber = 2;
+    private List<SocketChannel> socketChannels = new ArrayList<>();
 
     public Server() {
         try {
@@ -45,8 +38,9 @@ public class Server {
     private void bind() throws IOException {
         channel = ServerSocketChannel.open();
         // bind server socket channel to port
-        channel.socket().bind(new InetSocketAddress(ADDRESS, PORT));
+        // 非阻塞模式的设置必须在设置端口前完成
         channel.configureBlocking(false);
+        channel.socket().bind(new InetSocketAddress(ADDRESS, PORT));
         // 连接selector
         channel.register(selector, SelectionKey.OP_ACCEPT);
 
@@ -71,26 +65,19 @@ public class Server {
                 }
                 if (key.isAcceptable()) {
                     this.accept(key);
-                    SocketChannel sc = channel.accept();
-                    sc.configureBlocking(false);
-                    sc.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-                    // handler.channelQueueHashMap.put(sc,new ConcurrentLinkedDeque<>());
                     System.out.println("用户连接成功");
-                }
-                if (key.isReadable()) {
-                    this.read(key);
-                    SocketChannel sc = (SocketChannel) key.channel();
-                    ByteBuffer buffer = ByteBuffer.allocate(1024);
-                    int count = sc.read(buffer);
-                    buffer.flip();
-                    // handler.handle(sc,buffer);
-                    sc.register(selector,  SelectionKey.OP_WRITE);
-                }
-                if (key.isWritable()) {
-                    this.write(key);
-                    SocketChannel sc = (SocketChannel) key.channel();
-                    // handler.write(sc);
-                    sc.register(selector, SelectionKey.OP_READ);
+                } else if (key.isReadable()) {
+                    byte[] bytes = this.read(key);
+                    ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
+                    // 向所有客户端发送读到的数据
+                    for (SocketChannel socketChannel : socketChannels) {
+                        buffer.put(bytes);
+                        buffer.flip();
+                        socketChannel.write(buffer);
+                        buffer.clear();
+                    }
+                } else if (key.isWritable()) {
+                    // TODO
                 }
             }
             it.remove();
@@ -109,11 +96,6 @@ public class Server {
         Socket socket = channel.socket();
         SocketAddress remoteAddr = socket.getRemoteSocketAddress();
         System.out.println("Connected to: " + remoteAddr);
-
-        /*
-         * Register channel with selector for further IO (record it for read/write
-         * operations, here we have used read operation)
-         */
         channel.register(this.selector, SelectionKey.OP_READ);
     }
 
@@ -122,43 +104,43 @@ public class Server {
      * @param key selector key
      * @throws IOException IO异常
      */
-    private void read(SelectionKey key) throws IOException {
+    private byte[] read(SelectionKey key) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
-        Socket socket = channel.socket();
-        ObjectInputStream objectInputStream;
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        int numRead = -1;
+        numRead = channel.read(buffer);
 
-        try {
-            objectInputStream = new ObjectInputStream(socket.getInputStream());
-            while (true) {
-                System.out.println(objectInputStream.readObject());
-            }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            socket.close();
+        if (numRead == -1) {
+            Socket socket = channel.socket();
+            SocketAddress remoteAddr = socket.getRemoteSocketAddress();
+            System.out.println("Connection closed by client: " + remoteAddr);
+            channel.close();
+            key.cancel();
+            return null;
         }
+
+        byte[] data = new byte[numRead];
+        System.arraycopy(buffer.array(), 0, data, 0, numRead);
+        channel.register(this.selector, SelectionKey.OP_WRITE);
+
+        return data;
     }
 
     /**
      * write to client
+     * maybe not need
      * @param key selector key
      * @throws IOException IO异常
      */
     private void write(SelectionKey key) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
         Socket socket = channel.socket();
-
-
+        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-        Scanner scanner = new Scanner(new InputStreamReader(System.in));
-
-        while (true) {
-            GameScreen gameScreen = new GameScreen("Calabash Game", Color.WHITE);
-            GameController gameController = new GameController(30);
-            gameScreen.add(gameController);
-            gameController.startGame();
-            gameScreen.setVisible(true);
-        }
+        // Object object;
+        // objectOutputStream.writeObject(object);
+        objectOutputStream.flush();
+        channel.write(ByteBuffer.wrap(byteOut.toByteArray()));
     }
 
     public static void main(String[] args) {

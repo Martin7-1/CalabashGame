@@ -1,9 +1,11 @@
 package com.nju.edu.skill;
 
+import java.io.Serializable;
+
 /**
  * @author Zyi
  */
-public enum SkillName {
+public enum SkillName implements Serializable {
 
     /**
      * 移动技能
