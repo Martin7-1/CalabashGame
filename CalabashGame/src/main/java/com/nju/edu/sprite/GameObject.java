@@ -120,7 +120,7 @@ public abstract class GameObject implements Serializable {
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
         // 存储照片
-        ImageIO.write(this.image, "png", out);
+        ImageIO.write(this.image, "jpg", out);
     }
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {

@@ -1,5 +1,7 @@
 package com.nju.edu.server;
 
+import com.nju.edu.sprite.Calabash;
+
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -20,12 +22,11 @@ public class Server {
     private ServerSocketChannel channel;
     private Selector selector;
 
-    // private Handler handler;
-
     private static final int PORT = 8080;
     private static final String ADDRESS = "localhost";
     private int playerNumber = 2;
     private List<SocketChannel> socketChannels = new ArrayList<>();
+    private byte[] bytes;
 
     public Server() {
         try {
@@ -71,6 +72,7 @@ public class Server {
                     ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
                     // 向所有客户端发送读到的数据
                     for (SocketChannel socketChannel : socketChannels) {
+                        assert bytes != null;
                         buffer.put(bytes);
                         buffer.flip();
                         socketChannel.write(buffer);
@@ -97,6 +99,8 @@ public class Server {
         SocketAddress remoteAddr = socket.getRemoteSocketAddress();
         System.out.println("Connected to: " + remoteAddr);
         channel.register(this.selector, SelectionKey.OP_READ);
+
+        this.socketChannels.add(channel);
     }
 
     /**
@@ -121,7 +125,6 @@ public class Server {
 
         byte[] data = new byte[numRead];
         System.arraycopy(buffer.array(), 0, data, 0, numRead);
-        channel.register(this.selector, SelectionKey.OP_WRITE);
 
         return data;
     }
@@ -137,8 +140,6 @@ public class Server {
         Socket socket = channel.socket();
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-        // Object object;
-        // objectOutputStream.writeObject(object);
         objectOutputStream.flush();
         channel.write(ByteBuffer.wrap(byteOut.toByteArray()));
     }
