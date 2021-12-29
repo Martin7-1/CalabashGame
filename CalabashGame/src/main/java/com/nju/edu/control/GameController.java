@@ -68,7 +68,41 @@ public class GameController extends JPanel implements Runnable {
     private List<Blast> blastList;
 
     private boolean isExited = false;
-    private CalabashThread calabashThread = new CalabashThread();
+    private CalabashThread calabashThread;
+    private GrandfatherThread grandfatherThread;
+    private MonsterThread monsterThread;
+    private TimeControl timeControl;
+
+    GrandFatherMouseAdapter adapter;
+
+    /**
+     * 直接开始游戏
+     */
+    public void startGame() {
+        this.addKeyListener(calabashThread);
+        this.addMouseListener(adapter);
+        this.addMouseMotionListener(adapter);
+        this.requestFocus();
+
+        resetBoard();
+
+        this.render.execute(new RenderThread(this));
+        executor.execute(calabashThread);
+        executor.execute(grandfatherThread);
+        executor.execute(monsterThread);
+        executor.execute(timeControl);
+        executor.execute(this);
+
+        executor.shutdown();
+        render.shutdown();
+    }
+
+    /**
+     * 加载存储好的游戏
+     */
+    public void loadGame() {
+        // TODO
+    }
 
     public GameController(int fps) {
         this.fps = fps;
@@ -80,21 +114,11 @@ public class GameController extends JPanel implements Runnable {
         this.monsterBulletList = new CopyOnWriteArrayList<>();
         this.calabashBulletList = new CopyOnWriteArrayList<>();
         this.blastList = new CopyOnWriteArrayList<>();
-
-        this.addKeyListener(calabashThread);
-        this.requestFocus();
-
-        resetBoard();
-
-        this.render.execute(new RenderThread(this));
-        executor.execute(calabashThread);
-        executor.execute(new GrandfatherThread());
-        executor.execute(new MonsterThread());
-        executor.execute(new TimeControl());
-        executor.execute(this);
-
-        executor.shutdown();
-        render.shutdown();
+        calabashThread = new CalabashThread();
+        adapter = new GrandFatherMouseAdapter();
+        grandfatherThread = new GrandfatherThread();
+        monsterThread = new MonsterThread();
+        timeControl = new TimeControl();
     }
 
     public int getFps() {
@@ -257,22 +281,18 @@ public class GameController extends JPanel implements Runnable {
                 // 向上走y值减小
                 // 判断会不会走出边界
                 calabash.moveUp();
-                grandFather.moveUp();
             } else if (getKeyDown(KeyEvent.VK_S) || getKeyDown(KeyEvent.VK_DOWN)) {
                 // 向下走y值增大
                 // 判断会不会走出边界
                 calabash.moveDown();
-                grandFather.moveDown();
             } else if (getKeyDown(KeyEvent.VK_A) || getKeyDown(KeyEvent.VK_LEFT)) {
                 // 向左走x值减小
                 // 判断会不会走出边界
                 calabash.moveLeft();
-                grandFather.moveLeft();
             } else if (getKeyDown(KeyEvent.VK_D) || getKeyDown(KeyEvent.VK_RIGHT)) {
                 // 向右走x值增大
                 // 判断会不会走出边界
                 calabash.moveRight();
-                grandFather.moveRight();
             } else if (getKeyDown(KeyEvent.VK_J)) {
                 // 按j发射子弹
                 CalabashBullet bullet = calabash.calabashFire();
@@ -298,6 +318,7 @@ public class GameController extends JPanel implements Runnable {
                     }
                 }
             } else if (getKeyDown(KeyEvent.VK_L)) {
+                // 按L来加载上次存储的数据
                 try {
                     loadData();
                 } catch (IOException | ClassNotFoundException e) {
@@ -467,6 +488,8 @@ public class GameController extends JPanel implements Runnable {
         @Override
         public void run() {
             while (!isExited) {
+                moving();
+
                 // 根据时间的间隔给予葫芦娃技能
                 if (TIME % GIVE_SKILL_INTERVAL == 0) {
                     // 清空moveSkill和cdSkill的效果
@@ -483,6 +506,13 @@ public class GameController extends JPanel implements Runnable {
                     throw new RuntimeException(e);
                 }
             }
+        }
+
+        /**
+         * 爷爷通过鼠标移动来实现移动
+         */
+        public void moving() {
+
         }
     }
 

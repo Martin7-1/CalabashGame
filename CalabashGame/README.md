@@ -19,45 +19,50 @@
    ├─main
    │  └─java
    │      ├─com.nju.edu
-   |	  		 |
+   |	         |
    │             ├─bullet
-   | 			 |    CalabashBullet.java   # 葫芦娃子弹类
-   |			 |    MonsterBullet.java    # 妖精子弹类
-   |			 |     
+   | 	         |    CalabashBullet.java   # 葫芦娃子弹类
+   |             |    MonsterBullet.java    # 妖精子弹类
+   |             |     
    |             ├─control
    |             |    GameController.java   # 游戏的控制类，进行线程的管理和Panel的绘制等
    |             |    
    |             ├─game
    |             |    Game.java             # 游戏的入口与主类，主要是初始化GameScreen
-   |			 |
-   |      		 ├─skill
-   |			 |	  skill.java			# 一个技能的接口，声明了技能应该要有的几个方法
-   |			 |    MoveSkill.java		# 移动技能，能够加快葫芦娃的速度
-   |			 |	  CDSkill.java			# CD技能，能够缩短葫芦娃发射子弹时间的间隔
-   |			 |    RecoverSkill.java		# 恢复技能，能够给葫芦娃回血
-   |		     |
-   |   			 ├─screen
-   |             |	  GameScreen.java       # 继承了JFrame，游戏的主屏幕
-   |			 |	  RenderThread.java     # 用于强行刷新屏幕的类，单独的线程管理
-   |			 |
-   |			 ├─sprite
-   |			 |	  Calabash.java 		# 葫芦娃类，继承自Sprite
-   |			 |	  GameObject.java   	# 游戏物体类，所有游戏内的物体都继承了该类
-   |			 |	  Monster.java			# 妖精接口，声明了妖精的发射子弹方法
-   |			 |	  MonsterOne.java		# 第一类妖精，继承自Sprite
-   |			 |	  MonsterTwo.java	 	# 第二类妖精，继承自Sprite
-   |			 |	  MonsterThree.java		# 第三类妖精，继承自Sprite
-   |			 |	  Sprite.java			# 精灵类，继承自GameObject
-   |			 |
-   |			 ├─util
-   |			 |	  GameState.java		# 游戏的一些状态，枚举类
-   |			 |	  ReadImage.java		# 读取游戏图片的一个工具类
+   |             |
+   |             ├─skill
+   |             |    skill.java	    # 一个技能的接口，声明了技能应该要有的几个方法
+   |             |    MoveSkill.java        # 移动技能，能够加快葫芦娃的速度
+   |             |    CDSkill.java	    # CD技能，能够缩短葫芦娃发射子弹时间的间隔
+   |             |    RecoverSkill.java	    # 恢复技能，能够给葫芦娃回血
+   |             |
+   |             ├─screen
+   |             |    GameScreen.java       # 继承了JFrame，游戏的主屏幕
+   |             |    RenderThread.java     # 用于强行刷新屏幕的类，单独的线程管理
+   |             |
+   |             ├─sprite
+   |             |    Calabash.java         # 葫芦娃类，继承自Sprite
+   |             |    GameObject.java       # 游戏物体类，所有游戏内的物体都继承了该类
+   |             |    Monster.java          # 妖精接口，声明了妖精的发射子弹方法
+   |             |    MonsterOne.java       # 第一类妖精，继承自Sprite
+   |             |    MonsterTwo.java       # 第二类妖精，继承自Sprite
+   |             |    MonsterThree.java     # 第三类妖精，继承自Sprite
+   |             |    Sprite.java           # 精灵类，继承自GameObject
+   |             |
+   |             ├─util
+   |             |    GameState.java        # 游戏的一些状态，枚举类
+   |             |    ReadImage.java        # 读取游戏图片的一个工具类
    |
    |
    └─test
        └─java
            └─com.nju.edu
               	  └─sprite
+              	      CalabashTest.java
+              	      GrandFatherTest.java
+              	      MonsterOneTest.java
+              	      MonsterTwoTest.java
+              	      MonsterThreeTest.java
 ```
 
 
@@ -148,7 +153,6 @@
 `util`包是定义了一些工具，包括读取图片、游戏状态的枚举类和游戏时间的控制类。
 
 
-
 ## 关于未来的一些进展
 
 * 目前暂时没有设置游戏取得胜利的条件
@@ -159,7 +163,9 @@
 ## 关于读取文档
 
 * 存储已经实现完成
-* 读取文档暂时还有点问题...妖怪的位置显示是对的，但是葫芦娃还会出现一点问题
+* 通过序列化读取已经存在resources文件夹中的存储文件
 
 ## 关于网络对战
-* 加入葫芦娃
+* 加入了爷爷，玩家二可以通过鼠标控制爷爷来躲避子弹，最终胜利条件是在保护好爷爷的情况下获得2000分
+* 玩家一控制葫芦娃发射子弹击败各种怪物
+* 爷爷只能够移动和给予葫芦娃技能，考验走位的时候到了！
