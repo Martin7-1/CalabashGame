@@ -17,7 +17,7 @@ public class CalabashTest {
 
     @BeforeClass
     public static void setUp() {
-        calabash = Calabash.getInstance();
+        calabash = new Calabash(100, 320);
     }
 
     @After
@@ -29,7 +29,7 @@ public class CalabashTest {
     public void moveSkillTest() {
         Skill moveSkill = new MoveSkill();
         calabash.setSkill(moveSkill);
-        moveSkill.start();
+        moveSkill.start(calabash);
 
         assertEquals(15, calabash.getSpeed());
     }
@@ -38,7 +38,7 @@ public class CalabashTest {
     public void CDSkillTest() {
         Skill CDSkill = new CDSkill();
         calabash.setSkill(CDSkill);
-        CDSkill.start();
+        CDSkill.start(calabash);
 
         assertEquals(80, calabash.getFireInterval());
     }
@@ -48,7 +48,7 @@ public class CalabashTest {
         Skill recoverSkill = new RecoverSkill();
         calabash.setSkill(recoverSkill);
         calabash.decreaseHP(20);
-        recoverSkill.start();
+        recoverSkill.start(calabash);
 
         assertEquals(90, calabash.getHP());
     }

@@ -1,7 +1,6 @@
 package com.nju.edu.skill;
 
 import com.nju.edu.sprite.Calabash;
-import com.nju.edu.sprite.GrandFather;
 
 import java.io.Serializable;
 
@@ -14,8 +13,6 @@ public class MoveSkill implements Skill, Serializable {
     private static final long serialVersionUID = 5395347668849596522L;
     private boolean haveSkill = false;
     private final SkillName name = SkillName.MOVE_SKILL;
-    private Calabash calabash = Calabash.getInstance();
-    private GrandFather grandFather = GrandFather.getInstance();
 
     @Override
     public boolean isHaveSkill() {
@@ -28,10 +25,9 @@ public class MoveSkill implements Skill, Serializable {
     }
 
     @Override
-    public void start() {
+    public void start(Calabash calabash) {
         // 加快移动速度
-        this.calabash.speedUp(true);
-        this.grandFather.speedUp(true);
+        calabash.speedUp(true);
     }
 
     @Override

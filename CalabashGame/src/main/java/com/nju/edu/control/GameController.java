@@ -2,13 +2,12 @@ package com.nju.edu.control;
 
 import com.nju.edu.bullet.CalabashBullet;
 import com.nju.edu.bullet.MonsterBullet;
+import com.nju.edu.client.Client;
 import com.nju.edu.screen.GameScreen;
 import com.nju.edu.screen.RenderThread;
 import com.nju.edu.skill.SkillName;
 import com.nju.edu.sprite.*;
-import com.nju.edu.util.GameState;
-import com.nju.edu.util.ReadImage;
-import com.nju.edu.util.TimeControl;
+import com.nju.edu.util.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -60,7 +59,6 @@ public class GameController extends JPanel implements Runnable {
 
     private Calabash calabashOne;
     private Calabash calabashTwo;
-    private GrandFather grandFather;
     private List<MonsterOne> monsterOneList;
     private List<MonsterTwo> monsterTwoList;
     private List<MonsterThree> monsterThreeList;
@@ -73,10 +71,18 @@ public class GameController extends JPanel implements Runnable {
     private GrandfatherThread grandfatherThread;
     private MonsterThread monsterThread;
     private TimeControl timeControl;
+    private final int gameControllerID;
+    private Client client;
+    /**
+     * 默认情况是单人模式的
+     */
+    private GameMode gameMode = GameMode.Single_Player;
 
     public void start() {
-        calabashOne = Calabash.getInstance();
-        grandFather = GrandFather.getInstance();
+        if (gameMode == GameMode.Multi_Player) {
+            calabashTwo = new Calabash(100, 320);
+        }
+        calabashOne = new Calabash(100, 320);
         resetBoard();
         executePool();
     }
@@ -85,8 +91,10 @@ public class GameController extends JPanel implements Runnable {
      * 直接开始游戏
      */
     private void startGame() {
-        calabashOne = Calabash.getInstance();
-        grandFather = GrandFather.getInstance();
+        if (gameMode == GameMode.Multi_Player) {
+            calabashTwo = new Calabash(100, 320);
+        }
+        calabashOne = new Calabash(100, 320);
         resetBoard();
         executePool();
     }
@@ -113,8 +121,14 @@ public class GameController extends JPanel implements Runnable {
         executePool();
     }
 
-    public GameController(int fps) {
+    public GameController(int fps, int gameControllerID, Client client) {
         this.fps = fps;
+        this.gameControllerID = gameControllerID;
+        this.client = client;
+        if (client != null) {
+            // 多人模式
+            gameMode = GameMode.Multi_Player;
+        }
         // 并发容器的使用
         // 线程安全的arrayList
         this.monsterOneList = new CopyOnWriteArrayList<>();
@@ -144,7 +158,6 @@ public class GameController extends JPanel implements Runnable {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            repaint();
         }
     }
 
@@ -279,7 +292,6 @@ public class GameController extends JPanel implements Runnable {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                repaint();
             }
         }
 
@@ -289,31 +301,72 @@ public class GameController extends JPanel implements Runnable {
                 // 向上走y值减小
                 // 判断会不会走出边界
                 calabashOne.moveUp();
-                grandFather.moveUp();
+                if (gameMode == GameMode.Multi_Player) {
+                    // 通过客户端传输消息
+                    try {
+                        client.send(Message.Calabash_Move);
+                        System.out.println("[CalabashThread][Msg]:move");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             } else if (getKeyDown(KeyEvent.VK_S) || getKeyDown(KeyEvent.VK_DOWN)) {
                 // 向下走y值增大
                 // 判断会不会走出边界
                 calabashOne.moveDown();
-                grandFather.moveDown();
+                if (gameMode == GameMode.Multi_Player) {
+                    // 通过客户端传输消息
+                    try {
+                        client.send(Message.Calabash_Move);
+                        System.out.println("[CalabashThread][Msg]:move");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             } else if (getKeyDown(KeyEvent.VK_A) || getKeyDown(KeyEvent.VK_LEFT)) {
                 // 向左走x值减小
                 // 判断会不会走出边界
                 calabashOne.moveLeft();
-                grandFather.moveLeft();
+                if (gameMode == GameMode.Multi_Player) {
+                    // 通过客户端传输消息
+                    try {
+                        client.send(Message.Calabash_Move);
+                        System.out.println("[CalabashThread][Msg]:move");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             } else if (getKeyDown(KeyEvent.VK_D) || getKeyDown(KeyEvent.VK_RIGHT)) {
                 // 向右走x值增大
                 // 判断会不会走出边界
                 calabashOne.moveRight();
-                grandFather.moveRight();
+                if (gameMode == GameMode.Multi_Player) {
+                    // 通过客户端传输消息
+                    try {
+                        client.send(Message.Calabash_Move);
+                        System.out.println("[CalabashThread][Msg]:move");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             } else if (getKeyDown(KeyEvent.VK_J)) {
                 // 按j发射子弹
                 CalabashBullet bullet = calabashOne.calabashFire();
                 if (TIME % calabashOne.getFireInterval() == 0) {
                     calabashBulletList.add(bullet);
                 }
+                if (gameMode == GameMode.Multi_Player) {
+                    // 通过客户端传输消息
+                    try {
+                        client.send(Message.Calabash_Shoot);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             } else if (getKeyDown(KeyEvent.VK_ENTER)) {
                 if (GameController.STATE == GameState.START) {
                     STATE = GameState.RUNNING;
+                    // TODO: press enter to start
                     // startGame();
                 } else if (GameController.STATE == GameState.GAME_OVER) {
                     STATE = GameState.RUNNING;
@@ -401,7 +454,6 @@ public class GameController extends JPanel implements Runnable {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                repaint();
             }
         }
 
@@ -443,7 +495,7 @@ public class GameController extends JPanel implements Runnable {
                 for (MonsterOne monsterOne : monsterOneList) {
                     if (isInGameScreen(monsterOne)) {
                         MonsterBullet monsterBullet = monsterOne.monsterFire();
-                        monsterBulletList.add(monsterBullet);
+                        addMonsterBullet(monsterBullet);
                     }
                 }
             }
@@ -451,7 +503,7 @@ public class GameController extends JPanel implements Runnable {
                 for (MonsterTwo monsterTwo : monsterTwoList) {
                     if (isInGameScreen(monsterTwo)) {
                         MonsterBullet monsterBullet = monsterTwo.monsterFire();
-                        monsterBulletList.add(monsterBullet);
+                        addMonsterBullet(monsterBullet);
                     }
                 }
             }
@@ -459,8 +511,19 @@ public class GameController extends JPanel implements Runnable {
                 for (MonsterThree monsterThree : monsterThreeList) {
                     if (isInGameScreen(monsterThree)) {
                         MonsterBullet monsterBullet = monsterThree.monsterFire();
-                        monsterBulletList.add(monsterBullet);
+                        addMonsterBullet(monsterBullet);
                     }
+                }
+            }
+        }
+
+        private void addMonsterBullet(MonsterBullet bullet) {
+            monsterBulletList.add(bullet);
+            if (gameMode == GameMode.Multi_Player) {
+                try {
+                    client.send(Message.Monster_Shoot);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -475,15 +538,39 @@ public class GameController extends JPanel implements Runnable {
             if (time % MONSTER_ONE_APPEAR == 0) {
                 MonsterOne monsterOne = new MonsterOne(GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
                 monsterOneList.add(monsterOne);
+                if (gameMode == GameMode.Multi_Player) {
+                    try {
+                        client.send(Message.Monster_One);
+                        System.out.println("[MonsterThread][Msg]: MonsterOne Appear");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
             // 妖精二出现的时间
             if (time % MONSTER_TWO_APPEAR == 0) {
                 MonsterTwo monsterTwo = new MonsterTwo(GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
                 monsterTwoList.add(monsterTwo);
+                if (gameMode == GameMode.Multi_Player) {
+                    try {
+                        client.send(Message.Monster_Two);
+                        System.out.println("[MonsterThread][Msg]: MonsterTwo Appear");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
             if (time % MONSTER_THREE_APPEAR == 0) {
                 MonsterThree monsterThree = new MonsterThree(GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
                 monsterThreeList.add(monsterThree);
+                if (gameMode == GameMode.Multi_Player) {
+                    try {
+                        client.send(Message.Monster_Three);
+                        System.out.println("[MonsterThread][Msg]: MonsterThree Appear");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
@@ -507,8 +594,7 @@ public class GameController extends JPanel implements Runnable {
                 if (TIME % GIVE_SKILL_INTERVAL == 0) {
                     // 清空moveSkill和cdSkill的效果
                     calabashOne.clearSkillImpact();
-                    grandFather.clearSkillImpact();
-                    grandFather.giveSkill();
+                    calabashOne.giveSkill();
                     skillLabel.setText("curSkill: " + calabashOne.getCurSkill().getName());
                     calabashOne.setFirstUse();
                 }
@@ -645,10 +731,11 @@ public class GameController extends JPanel implements Runnable {
         } else if (STATE == GameState.RUNNING) {
             // 绘制葫芦娃
             paintCalabash(g);
+            if (gameMode == GameMode.Multi_Player) {
+                paintCalabashTwo(g);
+            }
             // 绘制妖精
             paintMonster(g);
-            // 绘制爷爷
-            paintGrandfather(g);
             // 绘制一组妖精子弹
             paintMonsterBullets(g);
             // 绘制葫芦娃的子弹
@@ -697,8 +784,8 @@ public class GameController extends JPanel implements Runnable {
         g.drawImage(ReadImage.Calabash, calabashOne.getX(), calabashOne.getY(), 100, 100, null);
     }
 
-    private void paintGrandfather(Graphics g) {
-        g.drawImage(ReadImage.GrandFather, grandFather.getX(), grandFather.getY(), 100, 100, null);
+    private void paintCalabashTwo(Graphics g) {
+        g.drawImage(ReadImage.Calabash, calabashTwo.getX(), calabashTwo.getY(), 100, 100, null);
     }
 
     private void paintMonster(Graphics g) {
@@ -762,11 +849,6 @@ public class GameController extends JPanel implements Runnable {
         ObjectOutputStream outCalabash = new ObjectOutputStream(fileCalabash);
         outCalabash.writeObject(calabashOne);
 
-        // 序列化保存爷爷
-        FileOutputStream fileGrandfather = new FileOutputStream(root + "grandfather.ser");
-        ObjectOutputStream outGrandFather = new ObjectOutputStream(fileGrandfather);
-        outGrandFather.writeObject(grandFather);
-
         // 序列化保存葫芦娃子弹
         FileOutputStream fileCalabashBullet = new FileOutputStream(root + "calabash_bullet.ser");
         ObjectOutputStream outCalabashBullet = new ObjectOutputStream(fileCalabashBullet);
@@ -793,8 +875,6 @@ public class GameController extends JPanel implements Runnable {
 
         fileCalabash.close();
         outCalabash.close();
-        fileGrandfather.close();
-        outGrandFather.close();
         fileCalabashBullet.close();
         outCalabashBullet.close();
         fileMonsterBullet.close();
@@ -840,10 +920,6 @@ public class GameController extends JPanel implements Runnable {
         ObjectInputStream inCalabash = new ObjectInputStream(fileCalabash);
         this.calabashOne = (Calabash) inCalabash.readObject();
 
-        FileInputStream fileGrandfather = new FileInputStream(root + "grandfather.ser");
-        ObjectInputStream inGrandfather = new ObjectInputStream(fileGrandfather);
-        this.grandFather = (GrandFather) inGrandfather.readObject();
-
         // 读取子弹
         FileInputStream fileCalabashBullet = new FileInputStream(root + "calabash_bullet.ser");
         ObjectInputStream inCalabashBullet = new ObjectInputStream(fileCalabashBullet);
@@ -872,8 +948,6 @@ public class GameController extends JPanel implements Runnable {
         inMonsterThree.close();
         fileCalabash.close();
         inCalabash.close();
-        fileGrandfather.close();
-        inGrandfather.close();
         fileCalabashBullet.close();
         inCalabashBullet.close();
         fileMonsterBullet.close();
@@ -888,8 +962,22 @@ public class GameController extends JPanel implements Runnable {
         return this.calabashOne;
     }
 
-    public void setCalabashTwo(Calabash calabash) {
-        this.calabashTwo = calabash;
+    public void setNewCalabash() {
+        // this.calabashTwo = new Calabash(100, 320);
+        // nothing to do
+        // init before run the method
+    }
+
+    /**
+     * 设置玩家二的坐标
+     * @param xPos x坐标
+     * @param yPos y坐标
+     */
+    public void setCalabashTwoPos(String xPos, String yPos) {
+        if (calabashTwo != null) {
+            this.calabashTwo.setX(Integer.parseInt(xPos));
+            this.calabashTwo.setY(Integer.parseInt(yPos));
+        }
     }
 
     public List<MonsterOne> getMonsterOneList() {
@@ -908,11 +996,68 @@ public class GameController extends JPanel implements Runnable {
         return calabashBulletList;
     }
 
+    /**
+     * 设置葫芦娃子弹的坐标，注意如果列表里已经有该坐标的子弹，那么我们就跳过
+     * @param positions 坐标
+     */
+    public void decodeCalabashBullet(String[] positions) {
+        // calabashTwo fire一次发送一次消息，所以这里只要加入列表即可
+        CalabashBullet calabashBullet = calabashTwo.calabashFire();
+        if (TIME % calabashTwo.getFireInterval() == 0) {
+            this.calabashBulletList.add(calabashBullet);
+        }
+    }
+
     public List<MonsterBullet> getMonsterBulletList() {
         return monsterBulletList;
     }
 
-    public GrandFather getGrandFather() {
-        return grandFather;
+    /**
+     * 解析妖精
+     * @param pos 妖精的坐标
+     * @param clazz 妖精的类名
+     */
+    public void decodeMonster(String[] pos, Class<?> clazz) {
+        System.out.println("[gameController]: add monster " + clazz.getSimpleName());
+        switch (clazz.getSimpleName()) {
+            case "MonsterOne":
+                addMonsterOne(pos);
+                break;
+            case "MonsterTwo":
+                addMonsterTwo(pos);
+                break;
+            case "MonsterThree":
+                addMonsterThree(pos);
+                break;
+            default:
+        }
+    }
+
+    private void addMonsterOne(String[] pos) {
+        for (int i = 0; i < pos.length; i+= 2) {
+            MonsterOne monsterOne = new MonsterOne(Integer.parseInt(pos[i]), Integer.parseInt(pos[i+1]));
+            this.monsterOneList.add(monsterOne);
+        }
+    }
+
+    private void addMonsterTwo(String[] pos) {
+        for (int i = 0; i < pos.length; i+= 2) {
+            MonsterTwo monsterTwo = new MonsterTwo(Integer.parseInt(pos[i]), Integer.parseInt(pos[i+1]));
+            this.monsterTwoList.add(monsterTwo);
+        }
+    }
+
+    private void addMonsterThree(String[] pos) {
+        for (int i = 0; i < pos.length; i+= 2) {
+            MonsterThree monsterThree = new MonsterThree(Integer.parseInt(pos[i]), Integer.parseInt(pos[i+1]));
+            this.monsterThreeList.add(monsterThree);
+        }
+    }
+
+    public void decodeMonsterBullet(String[] pos) {
+        for (int i = 0; i < pos.length; i+= 2) {
+            MonsterBullet monsterBullet = new MonsterBullet(Integer.parseInt(pos[i]), Integer.parseInt(pos[i+1]));
+            this.monsterBulletList.add(monsterBullet);
+        }
     }
 }

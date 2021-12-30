@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="8" failures="0" name="com.nju.edu.sprite.CalabashTest" time="0.151" errors="0" skipped="0">
+<testsuite tests="8" failures="0" name="com.nju.edu.sprite.CalabashTest" time="0.016" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="D:\Java\jdk 1.8\jre\bin"/>
@@ -29,7 +29,7 @@
     <property name="os.name" value="Windows 10"/>
     <property name="classworlds.conf" value="D:\maven\apache-maven-3.8.3\bin\m2.conf"/>
     <property name="sun.jnu.encoding" value="GBK"/>
-    <property name="java.library.path" value="D:\Java\jdk 1.8\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\PlasticSCM5\server;C:\Program Files\PlasticSCM5\client;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\DTS\Binn\;D:\texlive\2020\bin\win32;D:\Git\cmd;D:\Pandoc\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\dotnet\;D:\anaconda\Scripts;D:\nodejs\;C:\Users\Zyi\AppData\Local\Microsoft\WindowsApps;D:\PyCharm Community Edition 2020.3.1\bin;;%IntelliJ IDEA Community Edition%;D:\IntelliJ IDEA 2020.3.1\bin;;D:\Java\jdk 1.8\bin;D:\Java\jdk 1.8\jre\bin;C:\Program Files\Bandizip\;C:\Program Files\mingw64\bin;C:\Users\Zyi\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Zyi\AppData\Local\GitHubDesktop\bin;D:\MiKTeX\miktex\bin\x64\;C:\Users\Zyi\.dotnet\tools;C:\Users\Zyi\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.7_qbz5n2kfra8p0\LocalCache\local-packages\Python37\Scripts;D:\anaconda\Scripts;D:\CLion 2021.2\bin;;D:\Java\jdk 1.8\bin;D:\FFmpeg\ffmpeg-N-104454-gd92fdc7144-win64-gpl\bin;D:\maven\apache-maven-3.8.3\bin;D:\MySql\installDir\bin;D:\Java;C:\Users\Zyi\AppData\Roaming\npm;."/>
+    <property name="java.library.path" value="D:\Java\jdk 1.8\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\PlasticSCM5\server;C:\Program Files\PlasticSCM5\client;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\DTS\Binn\;D:\texlive\2020\bin\win32;D:\Git\cmd;D:\Pandoc\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\dotnet\;D:\anaconda\Scripts;D:\nodejs\;D:\CTeX\UserData\miktex\bin;D:\CTeX\MiKTeX\miktex\bin;D:\CTeX\CTeX\ctex\bin;D:\CTeX\CTeX\cct\bin;D:\CTeX\CTeX\ty\bin;D:\CTeX\Ghostscript\gs9.05\bin;D:\CTeX\GSview\gsview;D:\CTeX\WinEdt;C:\Users\Zyi\AppData\Local\Microsoft\WindowsApps;D:\IntelliJ IDEA 2020.3.1\bin;;D:\Java\jdk 1.8\bin;D:\Java\jdk 1.8\jre\bin;C:\Program Files\Bandizip\;C:\Program Files\mingw64\bin;C:\Users\Zyi\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Zyi\.dotnet\tools;C:\Users\Zyi\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.7_qbz5n2kfra8p0\LocalCache\local-packages\Python37\Scripts;D:\anaconda\Scripts;D:\CLion 2021.2\bin;;D:\Java\jdk 1.8\bin;D:\FFmpeg\ffmpeg-N-104454-gd92fdc7144-win64-gpl\bin;D:\maven\apache-maven-3.8.3\bin;D:\MySql\installDir\bin;D:\Java;C:\Users\Zyi\AppData\Roaming\npm;%PyCharm%;D:\CTeX\CTeX\cct\bin;D:\CTeX\CTeX\ctex\bin;;."/>
     <property name="maven.conf" value="D:\maven\apache-maven-3.8.3/conf"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.class.version" value="52.0"/>
@@ -46,7 +46,7 @@
     <property name="java.vm.specification.version" value="1.8"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.home" value="D:\Java\jdk 1.8\jre"/>
-    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher test"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher install"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="user.language" value="zh"/>
     <property name="awt.toolkit" value="sun.awt.windows.WToolkit"/>
@@ -65,12 +65,12 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="com.nju.edu.sprite.CalabashTest" name="moveUpTest" time="0.004"/>
+  <testcase classname="com.nju.edu.sprite.CalabashTest" name="moveUpTest" time="0.005"/>
   <testcase classname="com.nju.edu.sprite.CalabashTest" name="CDSkillTest" time="0.001"/>
-  <testcase classname="com.nju.edu.sprite.CalabashTest" name="moveSkillTest" time="0.002"/>
-  <testcase classname="com.nju.edu.sprite.CalabashTest" name="moveRightTest" time="0.143"/>
-  <testcase classname="com.nju.edu.sprite.CalabashTest" name="bulletTest" time="0"/>
-  <testcase classname="com.nju.edu.sprite.CalabashTest" name="recoverTest" time="0.001"/>
+  <testcase classname="com.nju.edu.sprite.CalabashTest" name="moveSkillTest" time="0.001"/>
+  <testcase classname="com.nju.edu.sprite.CalabashTest" name="moveRightTest" time="0.008"/>
+  <testcase classname="com.nju.edu.sprite.CalabashTest" name="bulletTest" time="0.001"/>
+  <testcase classname="com.nju.edu.sprite.CalabashTest" name="recoverTest" time="0"/>
   <testcase classname="com.nju.edu.sprite.CalabashTest" name="moveDownTest" time="0"/>
   <testcase classname="com.nju.edu.sprite.CalabashTest" name="moveLeftTest" time="0"/>
 </testsuite>

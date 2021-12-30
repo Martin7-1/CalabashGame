@@ -14,7 +14,6 @@ public class RecoverSkill implements Skill, Serializable {
     private static final long serialVersionUID = -2234164833341386048L;
     private boolean haveSkill = false;
     private final SkillName name = SkillName.RECOVER_SKILL;
-    private Calabash calabash = Calabash.getInstance();
 
     @Override
     public boolean isHaveSkill() {
@@ -27,8 +26,8 @@ public class RecoverSkill implements Skill, Serializable {
     }
 
     @Override
-    public void start() {
-        this.calabash.recover();
+    public void start(Calabash calabash) {
+        calabash.recover();
     }
 
     @Override

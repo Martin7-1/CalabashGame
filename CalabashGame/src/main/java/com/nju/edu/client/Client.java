@@ -3,6 +3,7 @@ package com.nju.edu.client;
 import com.nju.edu.control.GameController;
 import com.nju.edu.screen.GameScreen;
 import com.nju.edu.sprite.Calabash;
+import com.nju.edu.util.Message;
 import com.nju.edu.util.MessageHelper;
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Zyi
@@ -22,6 +24,11 @@ public class Client {
     private GameScreen gameScreen;
     private GameController gameController;
     private SocketChannel clientChannel;
+    private static int clientID;
+
+    public Client() {
+        clientID++;
+    }
 
     private void startClient() throws IOException {
         InetSocketAddress hostAddress = new InetSocketAddress(HOST_NAME, PORT);
@@ -29,7 +36,7 @@ public class Client {
         clientChannel.configureBlocking(false);
 
         gameScreen = new GameScreen("Calabash Game", Color.WHITE);
-        gameController = new GameController(30);
+        gameController = new GameController(30, clientID, this);
         gameScreen.add(gameController);
         gameScreen.setVisible(true);
         gameController.setFocusable(true);
@@ -41,7 +48,6 @@ public class Client {
         // 发送消息到服务器端
         sendStart();
         while (clientChannel.isConnected()) {
-            send();
             read();
         }
     }
@@ -63,17 +69,12 @@ public class Client {
         buffer.clear();
     }
 
-    private void send() throws IOException {
+    public void send(Message msg) throws IOException {
         // 需要输送到服务器端的消息
         // 包括游戏中的所有物体
         ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
 
-        buffer.put(MessageHelper.encodeMove(gameController));
-        buffer.put(MessageHelper.encodeShoot(gameController));
-        buffer.put(MessageHelper.encodeMonsterOne(gameController));
-        buffer.put(MessageHelper.encodeMonsterTwo(gameController));
-        buffer.put(MessageHelper.encodeMonsterThree(gameController));
-        buffer.put(MessageHelper.encodeMonsterBullet(gameController));
+        buffer.put(MessageHelper.encode(msg, gameController));
         buffer.flip();
 
         if (buffer.hasRemaining()) {
@@ -98,10 +99,18 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        try {
-            new Client().startClient();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Runnable runnable = () -> {
+            try {
+                new Client().startClient();
+                System.out.println(Client.clientID);
+
+                TimeUnit.MILLISECONDS.sleep(200);
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        };
+
+        new Thread(runnable).start();
+        new Thread(runnable).start();
     }
 }

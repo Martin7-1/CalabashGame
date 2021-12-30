@@ -2,8 +2,7 @@ package com.nju.edu.sprite;
 
 import com.nju.edu.bullet.CalabashBullet;
 import com.nju.edu.screen.GameScreen;
-import com.nju.edu.skill.Skill;
-import com.nju.edu.skill.SkillName;
+import com.nju.edu.skill.*;
 import com.nju.edu.util.ReadImage;
 
 /**
@@ -11,13 +10,8 @@ import com.nju.edu.util.ReadImage;
  */
 public class Calabash extends Sprite {
 
-    private static final Calabash CALABASH = new Calabash(100, 320);
     private static final long serialVersionUID = -4970820453164850503L;
-    public Integer ID;
-
-    public static Calabash getInstance() {
-        return CALABASH;
-    }
+    private Integer ID;
 
     public Skill skill;
     private Boolean isFirstUse = true;
@@ -26,13 +20,17 @@ public class Calabash extends Sprite {
      */
     public Integer HP = 100;
     private Integer fireInterval = 120;
+    /**
+     * 给予技能的次数
+     */
+    private Integer giveTime = 0;
 
-    private Calabash(int x, int y) {
+    public Calabash(int x, int y) {
         super(x, y, 100, 100, ReadImage.Calabash);
         this.speed = 10;
     }
 
-    private Calabash(int x, int y, int speed) {
+    public Calabash(int x, int y, int speed) {
         super(x, y, 100, 100, ReadImage.Calabash);
         this.speed = speed;
     }
@@ -105,7 +103,7 @@ public class Calabash extends Sprite {
 
     public void useSkill() {
         System.out.println("Use skill: " + this.skill.getName());
-        this.skill.start();
+        this.skill.start(this);
     }
 
     public boolean isFirstUse() {
@@ -163,5 +161,23 @@ public class Calabash extends Sprite {
 
     public void setID(int id) {
         this.ID = id;
+    }
+
+    /**
+     * 给予葫芦娃一个技能
+     */
+    public void giveSkill() {
+        // 循环给予
+        if (giveTime % Skill.SKILL_AMOUNT == 0) {
+            System.out.println("give move skill");
+            this.setSkill(new MoveSkill());
+        } else if (giveTime % Skill.SKILL_AMOUNT == 1) {
+            System.out.println("give cd skill");
+            this.setSkill(new CDSkill());
+        } else if (giveTime % Skill.SKILL_AMOUNT == 2) {
+            System.out.println("give recover skill");
+            this.setSkill(new RecoverSkill());
+        }
+        this.giveTime++;
     }
 }

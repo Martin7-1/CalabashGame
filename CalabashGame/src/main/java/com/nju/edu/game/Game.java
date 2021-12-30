@@ -12,7 +12,7 @@ public class Game {
 
     public static void start() {
         GameScreen gameScreen = new GameScreen("Calabash Game", Color.WHITE);
-        GameController gameController = new GameController(30);
+        GameController gameController = new GameController(30, 1, null);
         gameScreen.add(gameController);
         gameController.start();
         gameController.requestFocus();

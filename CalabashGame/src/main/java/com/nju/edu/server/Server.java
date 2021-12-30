@@ -1,7 +1,5 @@
 package com.nju.edu.server;
 
-import com.nju.edu.sprite.Calabash;
-
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -110,7 +108,7 @@ public class Server {
      */
     private byte[] read(SelectionKey key) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
         int numRead = -1;
         numRead = channel.read(buffer);
 

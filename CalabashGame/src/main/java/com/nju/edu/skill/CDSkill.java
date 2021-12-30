@@ -14,7 +14,6 @@ public class CDSkill implements Skill, Serializable {
 
     private boolean haveSkill = false;
     private final SkillName name = SkillName.CD_SKILL;
-    private Calabash calabash = Calabash.getInstance();
 
     @Override
     public boolean isHaveSkill() {
@@ -27,7 +26,7 @@ public class CDSkill implements Skill, Serializable {
     }
 
     @Override
-    public void start() {
+    public void start(Calabash calabash) {
         calabash.setFireInterval(80);
     }
 

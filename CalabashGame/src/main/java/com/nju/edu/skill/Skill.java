@@ -1,5 +1,7 @@
 package com.nju.edu.skill;
 
+import com.nju.edu.sprite.Calabash;
+
 /**
  * @author Zyi
  */
@@ -21,7 +23,7 @@ public interface Skill {
     /**
      * 使用技能
      */
-    void start();
+    void start(Calabash calabash);
 
     /**
      * 获得当前的技能
