@@ -42,12 +42,12 @@ public class GameController extends JPanel implements Runnable {
     /**
      * 用一个线程池来管理妖精的出现
      */
-    private ExecutorService executor = Executors.newCachedThreadPool();
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
     /**
      * 用一个单独线程池来管理fps
      */
-    private ExecutorService render = Executors.newSingleThreadExecutor();
+    private final ExecutorService render = Executors.newSingleThreadExecutor();
     private int fps;
 
     private JLabel scoreLabel;
@@ -59,20 +59,19 @@ public class GameController extends JPanel implements Runnable {
 
     private Calabash calabashOne;
     private Calabash calabashTwo;
-    private List<MonsterOne> monsterOneList;
-    private List<MonsterTwo> monsterTwoList;
-    private List<MonsterThree> monsterThreeList;
-    private List<MonsterBullet> monsterBulletList;
-    private List<CalabashBullet> calabashBulletList;
-    private List<Blast> blastList;
+    private final List<MonsterOne> monsterOneList;
+    private final List<MonsterTwo> monsterTwoList;
+    private final List<MonsterThree> monsterThreeList;
+    private final List<MonsterBullet> monsterBulletList;
+    private final List<CalabashBullet> calabashBulletList;
+    private final List<Blast> blastList;
 
     private boolean isExited = false;
-    private CalabashThread calabashThread;
-    private GrandfatherThread grandfatherThread;
-    private MonsterThread monsterThread;
-    private TimeControl timeControl;
+    private final CalabashThread calabashThread;
+    private final MonsterThread monsterThread;
+    private final TimeControl timeControl;
     private final int gameControllerID;
-    private Client client;
+    private final Client client;
     /**
      * 默认情况是单人模式的
      */
@@ -102,7 +101,6 @@ public class GameController extends JPanel implements Runnable {
     private void executePool() {
         render.execute(new RenderThread(this));
         executor.execute(calabashThread);
-        executor.execute(grandfatherThread);
         executor.execute(monsterThread);
         executor.execute(timeControl);
         executor.execute(this);
@@ -138,7 +136,6 @@ public class GameController extends JPanel implements Runnable {
         this.calabashBulletList = new CopyOnWriteArrayList<>();
         this.blastList = new CopyOnWriteArrayList<>();
         calabashThread = new CalabashThread();
-        grandfatherThread = new GrandfatherThread();
         monsterThread = new MonsterThread();
         timeControl = new TimeControl();
     }
@@ -273,10 +270,11 @@ public class GameController extends JPanel implements Runnable {
          * 记录存放的按键数量
          */
         private final static int KEY_COUNTS = 1000;
+        private static final int GIVE_SKILL_INTERVAL = 4000;
 
 
         public CalabashThread() {
-            System.out.println("[CalabashThead]created");
+            System.out.println("[CalabashThead]created " + thread.getName());
             init();
         }
 
@@ -286,6 +284,15 @@ public class GameController extends JPanel implements Runnable {
             while (!isExited) {
                 moving();
                 calabashBulletMove(TIME);
+                sendMsg();
+
+                if (TIME % GIVE_SKILL_INTERVAL == 0 && calabashOne != null) {
+                    // 清空moveSkill和cdSkill的效果
+                    calabashOne.clearSkillImpact();
+                    calabashOne.giveSkill();
+                    skillLabel.setText("curSkill: " + calabashOne.getCurSkill().getName());
+                    calabashOne.setFirstUse();
+                }
 
                 try {
                     TimeUnit.MILLISECONDS.sleep(40);
@@ -302,65 +309,41 @@ public class GameController extends JPanel implements Runnable {
                 // 判断会不会走出边界
                 calabashOne.moveUp();
                 if (gameMode == GameMode.Multi_Player) {
-                    // 通过客户端传输消息
-                    try {
-                        client.send(Message.Calabash_Move);
-                        System.out.println("[CalabashThread][Msg]:move");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    // sendMsg();
                 }
             } else if (getKeyDown(KeyEvent.VK_S) || getKeyDown(KeyEvent.VK_DOWN)) {
                 // 向下走y值增大
                 // 判断会不会走出边界
                 calabashOne.moveDown();
                 if (gameMode == GameMode.Multi_Player) {
-                    // 通过客户端传输消息
-                    try {
-                        client.send(Message.Calabash_Move);
-                        System.out.println("[CalabashThread][Msg]:move");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    // sendMsg();
                 }
             } else if (getKeyDown(KeyEvent.VK_A) || getKeyDown(KeyEvent.VK_LEFT)) {
                 // 向左走x值减小
                 // 判断会不会走出边界
                 calabashOne.moveLeft();
                 if (gameMode == GameMode.Multi_Player) {
-                    // 通过客户端传输消息
-                    try {
-                        client.send(Message.Calabash_Move);
-                        System.out.println("[CalabashThread][Msg]:move");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    // sendMsg();
                 }
             } else if (getKeyDown(KeyEvent.VK_D) || getKeyDown(KeyEvent.VK_RIGHT)) {
                 // 向右走x值增大
                 // 判断会不会走出边界
                 calabashOne.moveRight();
                 if (gameMode == GameMode.Multi_Player) {
-                    // 通过客户端传输消息
-                    try {
-                        client.send(Message.Calabash_Move);
-                        System.out.println("[CalabashThread][Msg]:move");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    // sendMsg();
                 }
             } else if (getKeyDown(KeyEvent.VK_J)) {
                 // 按j发射子弹
                 CalabashBullet bullet = calabashOne.calabashFire();
                 if (TIME % calabashOne.getFireInterval() == 0) {
                     calabashBulletList.add(bullet);
-                }
-                if (gameMode == GameMode.Multi_Player) {
-                    // 通过客户端传输消息
-                    try {
-                        client.send(Message.Calabash_Shoot);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    // 加入列表之后发送消息
+                    if (gameMode == GameMode.Multi_Player) {
+                        try {
+                            client.send(Message.Calabash_Shoot, new String[]{String.valueOf(bullet.getX()), String.valueOf(bullet.getY())});
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             } else if (getKeyDown(KeyEvent.VK_ENTER)) {
@@ -395,6 +378,16 @@ public class GameController extends JPanel implements Runnable {
                 } else if (GameController.STATE == GameState.GAME_OVER) {
                     STATE = GameState.RUNNING;
                 }
+            }
+        }
+
+        private void sendMsg() {
+            // 通过客户端传输消息
+            try {
+                client.send(Message.Calabash_Move, new String[]{String.valueOf(calabashOne.getX()), String.valueOf(calabashOne.getY())});
+                System.out.println("[CalabashThread][Msg]: Calabash Move");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 
@@ -438,7 +431,7 @@ public class GameController extends JPanel implements Runnable {
 
         public MonsterThread() {
             // test
-            System.out.println("[MonsterThread]created");
+            System.out.println("[MonsterThread]created " + thread.getName());
         }
 
         @Override
@@ -521,7 +514,7 @@ public class GameController extends JPanel implements Runnable {
             monsterBulletList.add(bullet);
             if (gameMode == GameMode.Multi_Player) {
                 try {
-                    client.send(Message.Monster_Shoot);
+                    client.send(Message.Monster_Shoot, new String[]{String.valueOf(bullet.getX()), String.valueOf(bullet.getY())});
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -536,12 +529,13 @@ public class GameController extends JPanel implements Runnable {
             Random random = new Random();
             // 妖精一出现的时间
             if (time % MONSTER_ONE_APPEAR == 0) {
-                MonsterOne monsterOne = new MonsterOne(GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
+                int x = GameScreen.getWid();
+                int y = random.nextInt(GameScreen.getHei() - 200);
+                MonsterOne monsterOne = new MonsterOne(x, y);
                 monsterOneList.add(monsterOne);
                 if (gameMode == GameMode.Multi_Player) {
                     try {
-                        client.send(Message.Monster_One);
-                        System.out.println("[MonsterThread][Msg]: MonsterOne Appear");
+                        client.send(Message.Monster_One, new String[]{String.valueOf(x), String.valueOf(y)});
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -549,69 +543,31 @@ public class GameController extends JPanel implements Runnable {
             }
             // 妖精二出现的时间
             if (time % MONSTER_TWO_APPEAR == 0) {
-                MonsterTwo monsterTwo = new MonsterTwo(GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
+                int x = GameScreen.getWid();
+                int y = random.nextInt(GameScreen.getHei() - 200);
+                MonsterTwo monsterTwo = new MonsterTwo(x, y);
                 monsterTwoList.add(monsterTwo);
                 if (gameMode == GameMode.Multi_Player) {
                     try {
-                        client.send(Message.Monster_Two);
-                        System.out.println("[MonsterThread][Msg]: MonsterTwo Appear");
+                        client.send(Message.Monster_Two, new String[]{String.valueOf(x), String.valueOf(y)});
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }
             if (time % MONSTER_THREE_APPEAR == 0) {
-                MonsterThree monsterThree = new MonsterThree(GameScreen.getWid(), random.nextInt(GameScreen.getHei() - 200));
+                int x = GameScreen.getWid();
+                int y = random.nextInt(GameScreen.getHei() - 200);
+                MonsterThree monsterThree = new MonsterThree(x, y);
                 monsterThreeList.add(monsterThree);
                 if (gameMode == GameMode.Multi_Player) {
                     try {
-                        client.send(Message.Monster_Three);
-                        System.out.println("[MonsterThread][Msg]: MonsterThree Appear");
+                        client.send(Message.Monster_Three, new String[]{String.valueOf(x), String.valueOf(y)});
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             }
-        }
-    }
-
-    private class GrandfatherThread implements Runnable {
-        private Thread thread = Thread.currentThread();
-
-        private static final int GIVE_SKILL_INTERVAL = 4000;
-
-        public GrandfatherThread() {
-            // test
-            System.out.println("[GrandfatherThread]created");
-        }
-
-        @Override
-        public void run() {
-            while (!isExited) {
-                moving();
-
-                // 根据时间的间隔给予葫芦娃技能
-                if (TIME % GIVE_SKILL_INTERVAL == 0) {
-                    // 清空moveSkill和cdSkill的效果
-                    calabashOne.clearSkillImpact();
-                    calabashOne.giveSkill();
-                    skillLabel.setText("curSkill: " + calabashOne.getCurSkill().getName());
-                    calabashOne.setFirstUse();
-                }
-
-                try {
-                    TimeUnit.MILLISECONDS.sleep(40);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        /**
-         * 爷爷通过鼠标移动来实现移动
-         */
-        public void moving() {
-
         }
     }
 
@@ -975,8 +931,10 @@ public class GameController extends JPanel implements Runnable {
      */
     public void setCalabashTwoPos(String xPos, String yPos) {
         if (calabashTwo != null) {
+            System.out.println("[CalabashTwo]: CalabashTwo Move");
             this.calabashTwo.setX(Integer.parseInt(xPos));
             this.calabashTwo.setY(Integer.parseInt(yPos));
+
         }
     }
 
@@ -1018,7 +976,6 @@ public class GameController extends JPanel implements Runnable {
      * @param clazz 妖精的类名
      */
     public void decodeMonster(String[] pos, Class<?> clazz) {
-        System.out.println("[gameController]: add monster " + clazz.getSimpleName());
         switch (clazz.getSimpleName()) {
             case "MonsterOne":
                 addMonsterOne(pos);

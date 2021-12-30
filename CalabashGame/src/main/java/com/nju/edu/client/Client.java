@@ -11,6 +11,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.TimeUnit;
 
@@ -40,41 +41,23 @@ public class Client {
         gameScreen.add(gameController);
         gameScreen.setVisible(true);
         gameController.setFocusable(true);
-        gameController.requestFocus();
+        gameController.requestFocusInWindow();
         gameController.start();
 
         System.out.println("Client... started");
 
         // 发送消息到服务器端
-        sendStart();
         while (clientChannel.isConnected()) {
             read();
         }
     }
 
-    /**
-     * 告诉服务器新加入了一个客户端
-     * @throws IOException IO异常
-     */
-    private void sendStart() throws IOException {
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
-
-        buffer.put(MessageHelper.encodeNewClient(gameController));
-        buffer.flip();
-
-        if (buffer.hasRemaining()) {
-            clientChannel.write(buffer);
-        }
-
-        buffer.clear();
-    }
-
-    public void send(Message msg) throws IOException {
+    public void send(Message msg, String[] pos) throws IOException {
         // 需要输送到服务器端的消息
         // 包括游戏中的所有物体
         ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
 
-        buffer.put(MessageHelper.encode(msg, gameController));
+        buffer.put(MessageHelper.encode(msg, pos));
         buffer.flip();
 
         if (buffer.hasRemaining()) {
@@ -98,19 +81,7 @@ public class Client {
         MessageHelper.decode(buffer.array(), gameController);
     }
 
-    public static void main(String[] args) {
-        Runnable runnable = () -> {
-            try {
-                new Client().startClient();
-                System.out.println(Client.clientID);
-
-                TimeUnit.MILLISECONDS.sleep(200);
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-            }
-        };
-
-        new Thread(runnable).start();
-        new Thread(runnable).start();
+    public static void main(String[] args) throws IOException {
+        new Client().startClient();
     }
 }

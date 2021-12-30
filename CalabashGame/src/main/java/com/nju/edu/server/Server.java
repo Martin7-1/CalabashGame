@@ -24,6 +24,7 @@ public class Server {
     private static final String ADDRESS = "localhost";
     private int playerNumber = 2;
     private List<SocketChannel> socketChannels = new ArrayList<>();
+    private ByteBuffer buffer;
     private byte[] bytes;
 
     public Server() {
@@ -32,6 +33,7 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        buffer = ByteBuffer.allocate(1024 * 1024);
     }
 
     private void bind() throws IOException {
@@ -66,18 +68,9 @@ public class Server {
                     this.accept(key);
                     System.out.println("用户连接成功");
                 } else if (key.isReadable()) {
-                    byte[] bytes = this.read(key);
-                    ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
-                    // 向所有客户端发送读到的数据
-                    for (SocketChannel socketChannel : socketChannels) {
-                        assert bytes != null;
-                        buffer.put(bytes);
-                        buffer.flip();
-                        socketChannel.write(buffer);
-                        buffer.clear();
-                    }
+                    bytes = this.read(key);
                 } else if (key.isWritable()) {
-                    // TODO
+                    write(key);
                 }
             }
             it.remove();
@@ -123,6 +116,8 @@ public class Server {
 
         byte[] data = new byte[numRead];
         System.arraycopy(buffer.array(), 0, data, 0, numRead);
+        buffer.clear();
+        channel.register(selector, SelectionKey.OP_WRITE);
 
         return data;
     }
@@ -136,10 +131,15 @@ public class Server {
     private void write(SelectionKey key) throws IOException {
         SocketChannel channel = (SocketChannel) key.channel();
         Socket socket = channel.socket();
-        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-        objectOutputStream.flush();
-        channel.write(ByteBuffer.wrap(byteOut.toByteArray()));
+
+        for (SocketChannel socketChannel : socketChannels) {
+            buffer.put(bytes);
+            buffer.flip();
+            socketChannel.write(buffer);
+            buffer.clear();
+        }
+
+        channel.register(selector, SelectionKey.OP_READ);
     }
 
     public static void main(String[] args) {

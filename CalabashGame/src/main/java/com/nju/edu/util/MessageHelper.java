@@ -9,7 +9,6 @@ import com.nju.edu.sprite.MonsterTwo;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Zyi
@@ -28,15 +27,9 @@ public class MessageHelper {
     public static void decode(byte[] bytes, GameController gameController) {
         // 将bytes转换成字符串
         String temp = new String(bytes);
-        // 判断是不是第一次创建
-        if ("createCalabash".endsWith(temp)) {
-            decodeCalabash(gameController);
-            return;
-        }
         String[] messages = temp.split(" ");
 
         for (String message : messages) {
-            System.out.println(message);
             String[] arr = message.split(",");
             String[] positions = Arrays.copyOfRange(arr, 0, arr.length - 1);
             Message msg = MessageFactory.createMessage(message);
@@ -69,14 +62,6 @@ public class MessageHelper {
                 break;
             default:
         }
-    }
-
-    /**
-     * 设置新的葫芦娃
-     * @param gameController 主界面
-     */
-    private static void decodeCalabash(GameController gameController) {
-        gameController.setNewCalabash();
     }
 
     /**
@@ -119,39 +104,31 @@ public class MessageHelper {
     }
 
     /**
-     * 传输创建新的葫芦娃的消息
-     * @param gameController 主界面
-     * @return create new Calabash
-     */
-    public static byte[] encodeNewClient(GameController gameController) {
-        return "createCalabash".getBytes(StandardCharsets.UTF_8);
-    }
-
-    /**
      * 根据消息类型来进行编码的传输
      * @param message 消息类型
      * @return 消息
      */
-    public static byte[] encode(Message message, GameController gameController) {
+    public static byte[] encode(Message message, String[] pos) {
         byte[] bytes = null;
         switch (message) {
             case Calabash_Move:
-                bytes = encodeMove(gameController);
+                System.out.println("[encode], " + Integer.parseInt(pos[0]) + ", " + Integer.parseInt(pos[1]));
+                bytes = encodeMove(pos);
                 break;
             case Calabash_Shoot:
-                bytes = encodeShoot(gameController);
+                bytes = encodeShoot(pos);
                 break;
             case Monster_One:
-                bytes = encodeMonsterOne(gameController);
+                bytes = encodeMonsterOne(pos);
                 break;
             case Monster_Two:
-                bytes = encodeMonsterTwo(gameController);
+                bytes = encodeMonsterTwo(pos);
                 break;
             case Monster_Three:
-                bytes = encodeMonsterThree(gameController);
+                bytes = encodeMonsterThree(pos);
                 break;
             case Monster_Shoot:
-                bytes = encodeMonsterBullet(gameController);
+                bytes = encodeMonsterBullet(pos);
                 break;
             default:
         }
@@ -159,113 +136,27 @@ public class MessageHelper {
         return bytes;
     }
 
-    /**
-     * 传输移动的消息
-     * @param gameController 主界面
-     * @return message
-     */
-    private static byte[] encodeMove(GameController gameController) {
-        int x = gameController.getCalabashOne().getX();
-        int y = gameController.getCalabashOne().getY();
-
-        // format: x, y, calabashMove
-        return ("" + x + "," + y + ",CalabashMove ").getBytes(StandardCharsets.UTF_8);
+    private static byte[] encodeMove(String[] pos) {
+        return ("" + pos[0] + "," + pos[1] + ",CalabashMove ").getBytes(StandardCharsets.UTF_8);
     }
 
-    /**
-     * 传输射击的消息
-     * @param gameController 主界面
-     * @return message
-     */
-    private static byte[] encodeShoot(GameController gameController) {
-        List<CalabashBullet> list = gameController.getCalabashBulletList();
-        StringBuilder message = new StringBuilder();
-        message.append(list.size()).append(",");
-
-        for (CalabashBullet bullet : list) {
-            int x = bullet.getX();
-            int y = bullet.getY();
-            message.append(x).append(",").append(y).append(",");
-        }
-        message.append("CalabashBullet ");
-
-        return message.toString().getBytes(StandardCharsets.UTF_8);
+    private static byte[] encodeShoot(String[] pos) {
+        return ("" + pos[0] + "," + pos[1] + ",CalabashShoot ").getBytes(StandardCharsets.UTF_8);
     }
 
-    /**
-     * 传输怪物一的数量消息
-     * @param gameController 主界面
-     * @return message
-     */
-    public static byte[] encodeMonsterOne(GameController gameController) {
-        List<MonsterOne> list = gameController.getMonsterOneList();
-        StringBuilder message = new StringBuilder();
-        message.append(list.size()).append(",");
-
-        for (MonsterOne monsterOne : list) {
-            int x = monsterOne.getX();
-            int y = monsterOne.getY();
-            message.append(x).append(",").append(y).append(",");
-        }
-        message.append("MonsterOne ");
-
-        return message.toString().getBytes(StandardCharsets.UTF_8);
+    private static byte[] encodeMonsterOne(String[] pos) {
+        return ("" + pos[0] + "," + pos[1] + ",MonsterOne ").getBytes(StandardCharsets.UTF_8);
     }
 
-    /**
-     * 传输妖怪二的数量消息
-     * @param gameController 主界面
-     * @return message
-     */
-    public static byte[] encodeMonsterTwo(GameController gameController) {
-        List<MonsterTwo> list = gameController.getMonsterTwoList();
-        StringBuilder message = new StringBuilder();
-        message.append(list.size()).append(",");
-
-        for (MonsterTwo monsterTwo : list) {
-            int x = monsterTwo.getX();
-            int y = monsterTwo.getY();
-            message.append(x).append(",").append(y).append(",");
-        }
-        message.append("MonsterTwo ");
-
-        return message.toString().getBytes(StandardCharsets.UTF_8);
+    private static byte[] encodeMonsterTwo(String[] pos) {
+        return ("" + pos[0] + "," + pos[1] + ",MonsterTwo ").getBytes(StandardCharsets.UTF_8);
     }
 
-    /**
-     * 传输妖怪三的数量消息
-     * @param gameController 主界面
-     * @return message
-     */
-    public static byte[] encodeMonsterThree(GameController gameController) {
-        // format: i,x1,y1,x2,y2,...,xi,yi,monsterThree
-        List<MonsterThree> list = gameController.getMonsterThreeList();
-        // 还要返回位置
-        StringBuilder message = new StringBuilder();
-        message.append(list.size()).append(",");
-
-        for (MonsterThree monsterThree : list) {
-            int x = monsterThree.getX();
-            int y = monsterThree.getY();
-            message.append(x).append(",").append(y).append(",");
-        }
-
-        message.append("MonsterThree ");
-        return message.toString().getBytes(StandardCharsets.UTF_8);
+    private static byte[] encodeMonsterThree(String[] pos) {
+        return ("" + pos[0] + "," + pos[1] + ",MonsterThree ").getBytes(StandardCharsets.UTF_8);
     }
 
-    public static byte[] encodeMonsterBullet(GameController gameController) {
-        List<MonsterBullet> list = gameController.getMonsterBulletList();
-        StringBuilder message = new StringBuilder();
-        message.append(list.size()).append(",");
-
-        for (MonsterBullet bullet : list) {
-            int x = bullet.getX();
-            int y = bullet.getY();
-            message.append(x).append(",").append(y).append(",");
-        }
-
-        message.append("MonsterBullet ");
-        return (message.toString()).getBytes(StandardCharsets.UTF_8);
+    public static byte[] encodeMonsterBullet(String[] pos) {
+        return ("" + pos[0] + "," + pos[1] + ",MonsterShoot ").getBytes(StandardCharsets.UTF_8);
     }
 }
